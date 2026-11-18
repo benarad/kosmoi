@@ -31,22 +31,25 @@
       <!-- The making, step by step. -->
       <div id="walk" hidden>
         <section>
-          <div class="walk-head">
+          <!-- The step's controls and its title, which stay in sight while its text is
+               scrolled. The controls come first, so that they never move when a title
+               runs to a second line. -->
+          <div class="walk-bar">
+            <div class="row steps">
+              <button id="walk-prev" type="button">Back</button>
+              <button id="walk-next" type="button">Next</button>
+              <span class="hint">or the arrow keys</span>
+              <span id="walk-count" class="value"></span>
+            </div>
+            <label id="act-row" class="slider">
+              <span>This step</span>
+              <input id="act" type="range" min="0" max="1000" step="1">
+              <button id="again" type="button">Again</button>
+            </label>
             <h2 id="walk-head"></h2>
-            <span id="walk-count" class="value"></span>
-          </div>
-          <p id="walk-where" class="where"></p>
-          <div class="row steps">
-            <button id="walk-prev" type="button">Back</button>
-            <button id="walk-next" type="button">Next</button>
-            <span class="value">or the arrow keys</span>
+            <p id="walk-where" class="where"></p>
           </div>
           <p id="walk-say" class="say"></p>
-          <label id="act-row" class="slider">
-            <span>This step</span>
-            <input id="act" type="range" min="0" max="1000" step="1">
-            <button id="again" type="button">Again</button>
-          </label>
           <p id="walk-greek" class="greek" lang="grc"></p>
           <p id="walk-english" class="english"></p>
           <p id="walk-dispute" class="dispute"></p>
@@ -149,8 +152,9 @@
         <p id="count-note" class="note"></p>
       </header>
       <div id="rollcall"></div>
-      <!-- What Timaeus says of the god or the circuit pointed at. Kept under the
-           list, so that filling it never moves the row under the cursor. -->
+      <!-- What Timaeus says of the circuit pointed at. Kept under the list, so that
+           filling it never moves the row under the cursor. A god's description
+           opens in the list itself, under its row. -->
       <div id="detail" class="detail"></div>
     </aside>
   </div>

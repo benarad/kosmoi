@@ -78,9 +78,25 @@ h1 {
 
 /* ---------- the guided sequences ---------- */
 
-.walk-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-.walk-head h2 { text-transform: none; letter-spacing: 0; font-size: 15px; color: var(--ink); }
-.walk-head .value { white-space: nowrap; }
+/* The step's title and its controls stay in sight while the text under them
+   is scrolled. The bar reaches the panel's edges and sits flush with the top
+   of its section, so that it is in the same place stuck as unstuck. */
+#walk > section { padding-top: 0; }
+.walk-bar {
+  position: sticky;
+  top: -20px;                 /* the panel's own top padding, so that the bar sticks flush with its top edge */
+  z-index: 3;
+  margin: 0 -18px 12px;
+  padding: 14px 18px 12px;
+  background: var(--panel);
+  box-shadow: 0 1px 0 var(--line);
+}
+.walk-bar .row.steps { margin: 0; }
+.walk-bar .hint { color: var(--faint); font-size: 13px; }
+.walk-bar .value { white-space: nowrap; }
+.walk-bar #act-row { margin: 10px 0 0; }
+.walk-bar h2 { margin: 12px 0 0; text-transform: none; letter-spacing: 0; font-size: 15px; color: var(--ink); }
+.walk-bar .where { margin: 2px 0 0; }
 .where { margin: -5px 0 10px; color: var(--faint); font-size: 13px; }
 .where:empty { display: none; }
 
@@ -349,17 +365,20 @@ span.mx-name { cursor: default; }
    a hollow mark. Its description is given all the room the short list leaves. */
 .tabs { margin: 0 0 12px; }
 .tabs button { padding: 3px 10px; font-size: 13px; }
+/* A row of the gods' list is a button. Clicking it opens what Timaeus says of
+   that god directly under the row, and clicking it again closes it. */
+button.tc-row { width: 100%; border: 0; background: none; color: inherit; text-align: left; cursor: pointer; }
 .tc-row.god { padding: 5px 10px; }
 .tc-row.god .what small { font-style: italic; }
 .tc-row.unmade { opacity: 0.42; }
+.tc-row.unmade[aria-expanded="true"] { opacity: 0.75; }
 .tc-row .dot.hollow { box-sizing: border-box; border: 1.5px solid var(--faint); background: none; }
-.rollcall.gods #rollcall { flex: none; padding-bottom: 6px; }
-.rollcall.gods .detail { flex: 1; height: auto; min-height: 150px; }
-.detail .god-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-bottom: 7px; }
-.detail .greek-phrase { font: 15px/1.4 "GFS Didot", "Gentium Plus", "Palatino Linotype", "Times New Roman", serif; }
-.detail .where-phrase { color: var(--faint); font-size: 12.5px; }
-.rollcall.gods .detail p + p { margin-top: 8px; }
-.detail .dispute { padding: 0; }
+.god-about { margin: 2px 10px 12px 31px; padding: 2px 0 4px 12px; border-left: 2px solid var(--line); font-size: 13.5px; }
+.god-about p { margin: 0 0 8px; }
+.god-about .greek-phrase { font: 15px/1.4 "GFS Didot", "Gentium Plus", "Palatino Linotype", "Times New Roman", serif; }
+.god-about .tc-head { margin: 10px 0 3px; }
+.god-about .dispute { padding: 0; }
+.god-about .note { margin: 0; }
 /* A step of the making: its slider, and a button to play it again. */
 #act-row { margin: 0 0 12px; }
 #act-row[hidden], #time-heaven[hidden], #explore[hidden], #walk[hidden], .detail[hidden] { display: none; }
@@ -411,17 +430,18 @@ span.mx-name { cursor: default; }
   .detail { grid-column: 1; grid-row: 2; height: auto; min-height: 0; margin-top: 0; }
   #rollcall { grid-column: 2; grid-row: 1 / span 2; padding-top: 10px; column-width: 280px; column-gap: 14px; }
   .rc-group { break-inside: avoid; }
+  /* The gods' rows open in place, so they are kept in one column. */
+  .rollcall.gods #rollcall { column-width: auto; max-width: 560px; }
 }
 
 /* Narrow: the picture on top, then the controls, then the roll-call. */
 @media (max-width: 820px) {
   .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: 56vh auto auto; height: auto; min-height: 100vh; }
+  .walk-bar { top: 0; }       /* here it is the page that scrolls, and the page has no padding */
   .stage { order: -1; }
   .panel { border-right: 0; border-top: 1px solid var(--line); overflow: visible; }
   .rollcall { display: flex; overflow: visible; }
   #rollcall { overflow: visible; column-width: auto; }
   /* The list is as long as the page here, so the description stays in sight at the foot of the window. */
   .detail { position: sticky; bottom: 8px; height: min(238px, 32vh); margin-top: 8px; box-shadow: 0 0 0 1px var(--line), 0 -6px 18px rgba(0, 0, 0, 0.25); }
-  /* A god's description is long, so here it lies under the list at its own length. */
-  .rollcall.gods .detail { position: static; height: auto; box-shadow: none; }
 }

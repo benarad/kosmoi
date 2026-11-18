@@ -14,6 +14,7 @@ import { seasons, wander, elongation, daylight } from './cosmologies/aristotle/m
 import { Stage, THEMES, upQuaternion } from './stage/stage.js';
 import { SIGNS } from './stage/parts.js';
 import { SCRIPTS, sceneOf, sectionOf, litIndices } from './walk.js';
+import { giveKeysBack, showFromTop } from './panel.js';
 
 const $ = (id) => document.getElementById(id);
 const prefers = (q) => window.matchMedia && window.matchMedia(q).matches;
@@ -639,6 +640,7 @@ function goTo(i) {
   // window the list is as long as the page, and the page is left where it is.
   const first = rowOf[walkLit[0]], box = $('rollcall');
   if (first && box.scrollHeight > box.clientHeight) first.scrollIntoView({ block: 'nearest' });
+  showFromTop($('walk'));
 }
 
 // Take up one of the sequences where it was left, or (with null) go back to exploring.
@@ -1072,6 +1074,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+giveKeysBack();
 renderLegend();
 applyTheme();
 setPlaying(state.playing);

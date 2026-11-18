@@ -33,15 +33,18 @@
       <!-- A guided sequence, step by step. -->
       <div id="walk" hidden>
         <section>
-          <div class="walk-head">
+          <!-- The step's controls and its title, which stay in sight while its text is
+               scrolled. The buttons come first, so that they never move when a title
+               runs to a second line. -->
+          <div class="walk-bar">
+            <div class="row steps">
+              <button id="walk-prev" type="button">Back</button>
+              <button id="walk-next" type="button">Next</button>
+              <span class="hint">or the arrow keys</span>
+              <span id="walk-count" class="value"></span>
+            </div>
             <h2 id="walk-head"></h2>
-            <span id="walk-count" class="value"></span>
-          </div>
-          <p id="walk-where" class="where"></p>
-          <div class="row steps">
-            <button id="walk-prev" type="button">Back</button>
-            <button id="walk-next" type="button">Next</button>
-            <span class="value">or the arrow keys</span>
+            <p id="walk-where" class="where"></p>
           </div>
           <p id="walk-say" class="say"></p>
           <dl id="walk-measure" class="measure">

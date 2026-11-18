@@ -18,6 +18,7 @@ import { GODS, GOD_GROUPS } from './cosmologies/timaeus/gods.js';
 import { TimaeusView } from './cosmologies/timaeus/heaven-view.js';
 import { MakingView } from './cosmologies/timaeus/making-view.js';
 import { Stage, THEMES, upQuaternion } from './stage/stage.js';
+import { giveKeysBack, showFromTop } from './panel.js';
 
 const $ = (id) => document.getElementById(id);
 const prefers = (q) => window.matchMedia && window.matchMedia(q).matches;
@@ -370,6 +371,7 @@ function goTo(i) {
   // as long as the page, and the page is left where it is.
   const box = $('rollcall'), row = state.margin === 'list' ? rows[walk.index] : null;
   if (row && box.scrollHeight > box.clientHeight) row.scrollIntoView({ block: 'nearest' });
+  showFromTop($('walk'));
 }
 
 // Take the sequence up where it was left, or go back to looking around.
@@ -402,7 +404,8 @@ function renderMargin() {
   $('tab-list').setAttribute('aria-pressed', String(!gods));
   $('tab-list').textContent = walk.active ? 'The steps' : 'The circuits';
   $('rollcall-wrap').classList.toggle('gods', gods);
-  $('detail').hidden = !gods && walk.active;
+  // The box under the list is only for the circuits. A god's description opens in the list itself.
+  $('detail').hidden = gods || walk.active;
   if (gods) renderGods();
   else if (walk.active) renderSteps();
   else renderCircuits();
@@ -411,10 +414,11 @@ function renderMargin() {
 const stepAt = (ref) => MAKING.findIndex((s) => s.ref === ref);
 
 // The gods, each with what Timaeus calls it. Going through the sequence, a
-// god whose making has not yet been told is shown faint. Pointing at a row
-// picks the god out in the picture, if it is there, and puts up what Timaeus
-// says of it and how that is disputed; clicking goes to the step that tells
-// its making.
+// god that has not yet appeared in the story is shown faint. Clicking a row
+// opens, directly under it, what Timaeus says of that god and how that is
+// disputed, with a link to the step that introduces it. Clicking the row again
+// closes it. Pointing at a row only picks the god out in the picture, if it is
+// there: nothing that has to be read depends on where the pointer is.
 function renderGods() {
   const theme = THEMES[state.theme];
   const colours = { ink: theme.ink, zodiacal: theme.roles.zodiacal, star: theme.star, earth: theme.earth, curve: theme.curve };
@@ -427,55 +431,69 @@ function renderGods() {
       group = g.group;
       box.appendChild(el('p', 'tc-head', GOD_GROUPS[group]));
     }
-    const told = stepAt(g.at), made = !walk.active || walk.index >= stepAt(g.from || g.at);
-    const r = el('div', 'tc-row god choose');
-    r.tabIndex = 0;
+    const made = !walk.active || walk.index >= stepAt(g.from || g.at), open = state.god === g.id;
+    const r = el('button', 'tc-row god');
+    r.type = 'button';
+    r.setAttribute('aria-expanded', String(open));
     const mark = el('span', g.dot ? 'dot' : 'dot hollow');
     if (g.dot) mark.style.background = colours[g.dot];
     const what = el('span', 'what', g.name);
     what.appendChild(el('small', '', `“${g.called}”`));
     r.append(mark, what, el('span', 'period', g.ref));
     r.classList.toggle('unmade', !made);
-    r.classList.toggle('focused', walk.active && walk.index === told);
-    r.title = `Go to step ${told + 1}, ${MAKING[told].title}`;
+    r.classList.toggle('focused', open);
     // The picture answers only for a god that is in it by now.
-    const on = () => { hover = made && !act ? g.lit : null; state.god = g.id; look(); showGod(); showPointed(g.id); };
-    const off = () => { hover = null; look(); showPointed(null); };
+    const on = () => { hover = made && !act ? g.lit : null; look(); };
+    const off = () => { hover = null; look(); };
     r.onmouseenter = on; r.onmouseleave = off; r.onfocus = on; r.onblur = off;
-    const go = () => { if (walk.active) goTo(told); else { walk.index = told; setWalking(true); } };
-    r.onclick = go;
-    r.onkeydown = (e) => { if (e.code === 'Enter') go(); };
+    r.onclick = () => openGod(g.id);
     box.appendChild(r);
     rows[g.id] = r;
+    if (open) box.appendChild(aboutGod(g));
   }
   $('margin-title').textContent = 'The gods of the Timaeus';
   $('count-line').textContent = 'Timaeus speaks of a maker, of five gods or kinds of god that he made, and of something divine in each of us.';
   $('count-note').textContent = walk.active
-    ? 'A god that has not yet appeared in the story is shown faintly. Point at a row to read about that god, or click it to go to the step that introduces it.'
-    : 'Point at a row to read about that god, or click it to go to the step that introduces it.';
-  showGod();
+    ? 'A god that has not yet appeared in the story is shown faintly. Click a row to read what Timaeus says about that god and what scholars disagree about.'
+    : 'Click a row to read what Timaeus says about that god and what scholars disagree about.';
 }
 
-function showPointed(id) {
-  for (const [key, r] of Object.entries(rows)) r.classList.toggle('lit', key === id);
-}
-
-// What Timaeus says of the god last pointed at, and how it is disputed. It
-// stays up when the pointer leaves the row, so that it can be read to the end.
-function showGod() {
-  const box = $('detail');
-  box.textContent = '';
-  const g = GODS.find((x) => x.id === state.god);
-  if (!g) {
-    box.appendChild(el('p', 'hint', 'Point at a god to read what Timaeus says about it and what scholars disagree about.'));
-    return;
+// Opens the description of one god under its row, or closes it if it is open.
+// Only one is open at a time. The rows themselves are left as they are, so a
+// reader who is working from the keyboard keeps their place.
+function openGod(id) {
+  state.god = state.god === id ? null : id;
+  for (const g of GODS) {
+    const r = rows[g.id], open = state.god === g.id, under = r.nextElementSibling;
+    r.setAttribute('aria-expanded', String(open));
+    r.classList.toggle('focused', open);
+    if (under && under.classList.contains('god-about')) under.remove();
+    if (open) r.after(aboutGod(g));
   }
-  const head = el('p', 'god-head');
-  const greek = el('span', 'greek-phrase', g.greek);
+  // Bring the whole description into sight if the list scrolls by itself.
+  const box = $('rollcall'), r = rows[state.god], about = r && r.nextElementSibling;
+  if (about && box.scrollHeight > box.clientHeight) {
+    const frame = box.getBoundingClientRect(), top = r.getBoundingClientRect().top, bottom = about.getBoundingClientRect().bottom;
+    if (bottom > frame.bottom) box.scrollTop += Math.min(bottom - frame.bottom, top - frame.top);
+    else if (top < frame.top) box.scrollTop -= frame.top - top;
+  }
+}
+
+// What Timaeus says of a god and how it is disputed, with a way to the step that introduces it.
+function aboutGod(g) {
+  const told = stepAt(g.at), box = el('div', 'god-about');
+  const greek = el('p', 'greek-phrase', g.greek);
   greek.lang = 'grc';
-  head.append(el('b', '', g.name), greek, el('span', 'where-phrase', g.ref));
-  box.append(head, el('p', '', g.says), el('p', 'dispute', g.dispute));
-  box.scrollTop = 0;
+  box.append(greek, el('p', '', g.says), el('p', 'tc-head', 'What scholars disagree about'), el('p', 'dispute', g.dispute));
+  if (walk.active && walk.index === told) {
+    box.appendChild(el('p', 'note', 'The step you are on is the one that introduces this god.'));
+  } else {
+    const go = el('button', 'link', `Go to step ${told + 1}, ${MAKING[told].title}`);
+    go.type = 'button';
+    go.onclick = () => { if (walk.active) goTo(told); else { walk.index = told; setWalking(true); } };
+    box.appendChild(go);
+  }
+  return box;
 }
 
 // Going through the making, the margin lists its steps.
@@ -681,6 +699,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
+giveKeysBack();
 renderLegend();
 applyTheme();
 setPlaying(state.playing);
