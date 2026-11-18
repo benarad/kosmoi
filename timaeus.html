@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kosmoi: the heaven of Plato’s Timaeus</title>
+  <link rel="stylesheet" href="css/app.css">
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel">
+      <header>
+        <nav class="cosmoi" aria-label="Which cosmos">
+          <a href="index.html">Aristotle</a>
+          <a href="timaeus.html" aria-current="page">Plato’s <i>Timaeus</i></a>
+        </nav>
+        <h1>Kosmoi</h1>
+        <p class="sub">The heaven of Plato’s <i>Timaeus</i></p>
+        <div class="seg mode" role="group" aria-label="What to do">
+          <button id="mode-making" type="button" title="Timaeus’ account of how the world and its gods were made, step by step, in Greek and English">The making</button>
+          <button id="mode-look" type="button" title="Turn the finished heaven round for yourself">Look around</button>
+        </div>
+        <div class="seg mode quiet" role="group" aria-label="For closer work">
+          <button id="mode-astronomy" type="button" title="How large the seven circles are, and where each number comes from">Astronomy</button>
+        </div>
+      </header>
+
+      <!-- The making, step by step. -->
+      <div id="walk" hidden>
+        <section>
+          <div class="walk-head">
+            <h2 id="walk-head"></h2>
+            <span id="walk-count" class="value"></span>
+          </div>
+          <p id="walk-where" class="where"></p>
+          <div class="row steps">
+            <button id="walk-prev" type="button">Back</button>
+            <button id="walk-next" type="button">Next</button>
+            <span class="value">or the arrow keys</span>
+          </div>
+          <p id="walk-say" class="say"></p>
+          <label id="act-row" class="slider">
+            <span>This step</span>
+            <input id="act" type="range" min="0" max="1000" step="1">
+            <button id="again" type="button">Again</button>
+          </label>
+          <p id="walk-greek" class="greek" lang="grc"></p>
+          <p id="walk-english" class="english"></p>
+          <p id="walk-dispute" class="dispute"></p>
+          <p id="walk-credit" class="note">The Greek is Burnet’s Oxford text and the English is Bury’s Loeb translation of 1929, both as digitised by the <a href="https://www.perseus.tufts.edu/" target="_blank" rel="noopener">Perseus Digital Library</a> and used under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> licence. The English is used here until another is supplied. The <a href="https://github.com/benarad/kosmoi#texts-and-licences" target="_blank" rel="noopener">sources and licences</a> are listed in full with the code.</p>
+        </section>
+      </div>
+
+      <!-- Looking around the finished heaven for yourself. -->
+      <div id="explore">
+        <section>
+          <h2>Stand</h2>
+          <div id="views" class="seg" role="group" aria-label="Where to stand"></div>
+          <p id="view-note" class="note"></p>
+        </section>
+
+        <section>
+          <h2>Follow</h2>
+          <div id="focus" class="seg" role="group" aria-label="Which star to follow"></div>
+          <p id="focus-note" class="note"></p>
+        </section>
+
+        <!-- Everything astronomical: out of sight until asked for. -->
+        <div id="astronomy" hidden>
+          <section data-views="outside">
+            <h2>How large the seven circles are</h2>
+            <label class="field">
+              <span>The circles’ sizes</span>
+              <select id="sizes"></select>
+            </label>
+            <p id="sizes-note" class="note"></p>
+          </section>
+
+          <section>
+            <h2>Where each number comes from</h2>
+            <ul id="legend" class="sources"></ul>
+            <p class="note">Apart from the proportions of the seven circles to one another, sizes and distances are not to scale. Timaeus gives no figure for the size of the Earth, the stars or the heaven.</p>
+            <p class="note">The fixed stars are the stars of the Yale Bright Star Catalogue down to magnitude 4.6, about a thousand in all, placed where they were in 350 BC. Athens is taken to be at 38° north, and the Different to be slanted at 24° to the Same.</p>
+          </section>
+        </div>
+      </div>
+
+      <section>
+        <h2>Time</h2>
+        <div class="row">
+          <button id="play" type="button">Pause</button>
+          <button id="reset" type="button">Start again</button>
+          <span id="elapsed" class="value"></span>
+        </div>
+        <!-- The clocks of the finished heaven; a step of the making has its own slider above. -->
+        <div id="time-heaven">
+          <label class="slider">
+            <span>Speed</span>
+            <input id="speed" type="range" min="0" max="1000" step="1">
+            <span id="speed-text" class="value"></span>
+          </label>
+          <label class="field">
+            <span>The turning of the Same</span>
+            <select id="clock">
+              <option value="held">held still</option>
+              <option value="daily">running</option>
+              <option value="noon">seen once a day, at noon</option>
+            </select>
+          </label>
+          <p id="clock-note" class="note"></p>
+        </div>
+      </section>
+
+      <section id="readout-section">
+        <h2 id="readout-title"></h2>
+        <dl id="readout"></dl>
+      </section>
+
+      <section>
+        <h2>Picture</h2>
+        <div class="checks">
+          <label><input id="show-labels" type="checkbox"> Names</label>
+          <label><input id="show-stars" type="checkbox"> The fixed stars</label>
+          <label><input id="show-trail" type="checkbox"> Path of the star followed</label>
+        </div>
+        <div class="row">
+          <button id="clear-trail" type="button">Clear path</button>
+          <button id="reset-view" type="button">Reset view</button>
+          <button id="theme" type="button">Paper</button>
+        </div>
+        <p id="drag-note" class="note">Drag to turn the view; scroll to move in or out.</p>
+      </section>
+    </aside>
+
+    <main id="stage" class="stage" aria-label="The heaven, drawn and moving"></main>
+
+    <aside id="rollcall-wrap" class="rollcall">
+      <header>
+        <!-- What the margin lists: the gods, or the steps or the circuits. -->
+        <div class="seg tabs" role="group" aria-label="What the margin lists">
+          <button id="tab-gods" type="button">The gods</button>
+          <button id="tab-list" type="button">The circuits</button>
+        </div>
+        <h2 id="margin-title">The gods of the Timaeus</h2>
+        <p id="count-line" class="count"></p>
+        <p id="count-note" class="note"></p>
+      </header>
+      <div id="rollcall"></div>
+      <!-- What Timaeus says of the god or the circuit pointed at. Kept under the
+           list, so that filling it never moves the row under the cursor. -->
+      <div id="detail" class="detail"></div>
+    </aside>
+  </div>
+
+  <script type="module" src="js/timaeus.js"></script>
+</body>
+</html>

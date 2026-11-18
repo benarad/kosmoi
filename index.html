@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kosmoi: Aristotle’s cosmos</title>
+  <link rel="stylesheet" href="css/app.css">
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+</head>
+<body>
+  <div class="app">
+    <aside class="panel">
+      <header>
+        <nav class="cosmoi" aria-label="Which cosmos">
+          <a href="index.html" aria-current="page">Aristotle</a>
+          <a href="timaeus.html">Plato’s <i>Timaeus</i></a>
+        </nav>
+        <h1>Kosmoi</h1>
+        <p class="sub">Aristotle’s cosmos, from <i>Metaphysics</i> Λ</p>
+        <div class="seg mode" role="group" aria-label="What to do">
+          <button id="mode-argument" type="button" title="From eternal motion to the unmoved movers, in fourteen steps">The argument</button>
+          <button id="mode-below" type="button" title="The four simple bodies, the Sun’s slanted course, and the sky from Athens">Below the Moon</button>
+          <button id="mode-look" type="button" title="Turn the heaven round for yourself">Look around</button>
+        </div>
+        <div class="seg mode quiet" role="group" aria-label="For closer work">
+          <button id="mode-chapter" type="button" title="Metaphysics Λ 8, clause by clause, in Greek and English">Λ 8 line by line</button>
+          <button id="mode-astronomy" type="button" title="The astronomers’ systems, the rival reconstructions, every number and where it comes from">Astronomy</button>
+        </div>
+      </header>
+
+      <!-- A guided sequence, step by step. -->
+      <div id="walk" hidden>
+        <section>
+          <div class="walk-head">
+            <h2 id="walk-head"></h2>
+            <span id="walk-count" class="value"></span>
+          </div>
+          <p id="walk-where" class="where"></p>
+          <div class="row steps">
+            <button id="walk-prev" type="button">Back</button>
+            <button id="walk-next" type="button">Next</button>
+            <span class="value">or the arrow keys</span>
+          </div>
+          <p id="walk-say" class="say"></p>
+          <dl id="walk-measure" class="measure">
+            <dt>The model gives</dt><dd id="measure-model"></dd>
+            <dt>What was seen</dt><dd id="measure-seen"></dd>
+          </dl>
+          <p id="walk-greek" class="greek" lang="grc"></p>
+          <p id="walk-english" class="english"></p>
+          <p id="walk-dispute" class="dispute"></p>
+          <p id="walk-credit" class="note">The Greek is Ross’s text (Oxford, 1924), as digitised by the <a href="https://www.perseus.tufts.edu/" target="_blank" rel="noopener">Perseus Digital Library</a> and used under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> licence. The English is Ross’s Oxford translation, which is used here until another is supplied. The <a href="https://github.com/benarad/kosmoi#texts-and-licences" target="_blank" rel="noopener">sources and licences</a> are listed in full with the code.</p>
+        </section>
+      </div>
+
+      <!-- Looking around for yourself. -->
+      <div id="explore">
+        <section>
+          <h2>Stand</h2>
+          <div id="views" class="seg" role="group" aria-label="Where to stand"></div>
+          <p id="view-note" class="note"></p>
+        </section>
+
+        <section data-views="outside ground">
+          <h2>Follow</h2>
+          <div id="focus" class="seg" role="group" aria-label="Which star to follow"></div>
+          <label class="check" data-views="outside"><input id="alone" type="checkbox"> Only its own spheres</label>
+          <p id="planet-note" class="note"></p>
+        </section>
+
+        <!-- Everything astronomical: out of sight until asked for. -->
+        <div id="astronomy" hidden>
+          <section data-views="outside ground">
+            <h2>System</h2>
+            <div id="systems" class="seg" role="group" aria-label="System"></div>
+            <p id="system-note" class="note"></p>
+            <label id="row-linkage" class="field">
+              <span>How the sets are joined</span>
+              <select id="linkage">
+                <option value="text">as the text has it</option>
+                <option value="hanson">Hanson: one more unwinder each</option>
+                <option value="drop">without the repeated first spheres</option>
+                <option value="beere">Beere: only the poles are carried</option>
+              </select>
+            </label>
+            <label id="row-unwinding" class="check"><input id="unwinding" type="checkbox"> Unwinding spheres in place</label>
+            <label id="row-extras" class="check"><input id="sun-moon-extras" type="checkbox"> Callippus’ extra spheres for Sun and Moon</label>
+            <label id="row-callippus" class="field">
+              <span>What Callippus’ spheres did</span>
+              <select id="callippus">
+                <option value="unknown">not recorded: show none</option>
+                <option value="schiaparelli">Schiaparelli’s conjecture</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Sun and Moon: second and third</span>
+              <select id="luminaries">
+                <option value="reported">as Simplicius reports</option>
+                <option value="exchanged">exchanged (Ideler)</option>
+              </select>
+            </label>
+            <p id="option-note" class="note"></p>
+          </section>
+
+          <section id="tilt-section">
+            <h2>Tilt of the fourth sphere to the third</h2>
+            <p class="note">Aristotle says only that the fourth sphere is slanted to the third, and no source records the angle. The figure of eight that the planet traces (the hippopede) is twice as long as the tilt.</p>
+            <label class="slider">
+              <span>Tilt</span>
+              <input id="tilt" type="range" min="0" max="180" step="1">
+              <span id="tilt-text" class="value"></span>
+            </label>
+            <div id="tilt-presets" class="seg" role="group" aria-label="Proposed tilts"></div>
+            <label id="synodic-row" class="field">
+              <span>Period of the third and fourth</span>
+              <select id="synodic"></select>
+            </label>
+            <p id="synodic-note" class="note"></p>
+          </section>
+
+          <section data-views="outside ground">
+            <h2>Show</h2>
+            <div class="checks">
+              <label><input id="show-trail" type="checkbox"> Path against the zodiac</label>
+              <label data-views="outside"><input id="show-figure" type="checkbox"> Hippopede</label>
+              <label data-views="outside"><input id="show-sight" type="checkbox"> Line of sight</label>
+              <label data-views="outside"><input id="show-shells" type="checkbox"> Whole spheres</label>
+              <label><input id="show-stars" type="checkbox"> The fixed stars</label>
+              <label><input id="show-movers" type="checkbox"> The movers</label>
+            </div>
+            <label class="field" data-views="outside">
+              <span>Colour each sphere by</span>
+              <select id="colour-by">
+                <option value="star">the star it is for</option>
+                <option value="work">what it does</option>
+              </select>
+            </label>
+            <label id="row-serve" class="field">
+              <span>An unwinding sphere is for</span>
+              <select id="serve">
+                <option value="above">the planet above it</option>
+                <option value="below">the planet below it</option>
+              </select>
+            </label>
+            <label class="field" data-views="outside">
+              <span>Upright</span>
+              <select id="upright">
+                <option value="zodiac">the zodiac lies level</option>
+                <option value="pole">the axis of the heaven stands up</option>
+              </select>
+            </label>
+            <div class="row">
+              <button id="clear-trail" type="button">Clear path</button>
+            </div>
+          </section>
+
+          <section>
+            <h2>The model tested</h2>
+            <p class="note">This sequence of eight tests compares what the model predicts with what was actually observed, including the lengths of the seasons, the retrogradations of the planets and the changes in their brightness.</p>
+            <div class="row"><button id="run-trials" type="button">Go through the trials</button></div>
+          </section>
+
+          <section>
+            <h2>Where each number comes from</h2>
+            <ul id="legend" class="sources"></ul>
+            <p class="note">Sizes and distances are not to scale. Aristotle gives no figures for them, and his spheres are in contact with one another, with no gaps between them.</p>
+            <p class="note">The fixed stars are the stars of the Yale Bright Star Catalogue down to magnitude 4.6, about a thousand in all, placed where they were in 350 BC. Athens is taken to be at 38° north, and the zodiac to be slanted at 24° to the equator.</p>
+          </section>
+        </div>
+      </div>
+
+      <section>
+        <h2>Time</h2>
+        <div class="row">
+          <button id="play" type="button">Pause</button>
+          <button id="reset" type="button">Start again</button>
+          <span id="elapsed" class="value"></span>
+        </div>
+        <label class="slider">
+          <span>Speed</span>
+          <input id="speed" type="range" min="0" max="1000" step="1">
+          <span id="speed-text" class="value"></span>
+        </label>
+        <label class="field">
+          <span>The daily turning</span>
+          <select id="clock">
+            <option value="held">held still</option>
+            <option value="daily">running</option>
+            <option value="noon">seen once a day, at noon</option>
+          </select>
+        </label>
+        <p id="clock-note" class="note"></p>
+      </section>
+
+      <section id="readout-section">
+        <h2 id="readout-title">Where the planet is</h2>
+        <dl id="readout"></dl>
+      </section>
+
+      <section>
+        <h2>Picture</h2>
+        <div class="row">
+          <label class="check inline"><input id="show-labels" type="checkbox"> Names</label>
+          <label id="row-arrows" class="check inline"><input id="show-arrows" type="checkbox"> Natural motions</label>
+          <button id="reset-view" type="button">Reset view</button>
+          <button id="theme" type="button">Paper</button>
+        </div>
+        <p id="drag-note" class="note">Drag to turn the view; scroll to move in or out.</p>
+        <p id="changed-note" class="note" hidden>Some of the settings under Astronomy have been changed, so this is no longer the system as chapter 8 describes it. <button id="restore" type="button" class="link">Restore it</button></p>
+      </section>
+    </aside>
+
+    <main id="stage" class="stage" aria-label="The cosmos, drawn and moving"></main>
+
+    <aside id="rollcall-wrap" class="rollcall">
+      <header>
+        <h2 id="rollcall-title">Spheres and their movers</h2>
+        <p id="count-line" class="count"></p>
+        <p id="count-note" class="note"></p>
+        <p id="mover-line" class="note"></p>
+        <ul id="sphere-key" class="key"></ul>
+        <ul id="mover-key" class="key"></ul>
+      </header>
+      <div id="rollcall"></div>
+      <!-- What the sphere pointed at does. Kept under the list and at one size,
+           so that filling it never moves the row under the cursor. -->
+      <div id="sphere-detail" class="detail"></div>
+    </aside>
+  </div>
+
+  <!-- The lines from spheres to their movers, drawn over everything. -->
+  <svg id="tether" aria-hidden="true">
+    <defs>
+      <marker id="tether-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path id="tether-head" d="M0,0 L10,5 L0,10 z"></path>
+      </marker>
+    </defs>
+    <g id="tether-all"></g>
+    <path id="tether-path" marker-end="url(#tether-arrow)"></path>
+  </svg>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
