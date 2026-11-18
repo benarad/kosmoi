@@ -81,17 +81,17 @@ const SYSTEMS = [
 ];
 
 const LINKAGE_NOTES = {
-  text: 'On the text as we have it, the first sphere of each set is carried round by the sphere above it and has no motion of its own to add. That leaves a sphere, and its mover, with nothing to do.',
+  text: 'On the text as we have it, the first sphere of each set is carried round by the sphere above it and has no motion of its own to add. This leaves both the sphere and its mover with nothing to do.',
   hanson: 'Hanson adds six more spheres, one below each set, which cancel the daily rotation as well and so stand still. The first sphere of the next set then supplies the daily rotation itself. These extra spheres are not in Aristotle.',
   drop: 'Dreyer, Heath and Ross pointed out that Aristotle could have left out the first sphere of every set below Saturn’s. Sosigenes had already objected to a similar proposal, on the ground that the spheres have to restore position as well as motion.',
-  beere: 'On Beere’s reading a sphere passes on only the motion of its poles, so each first sphere has to turn by its own motion. The heavens look the same as they do on the reading of the text. The difference lies in which spheres are doing the work.',
+  beere: 'On Beere’s reading a sphere passes on only the motion of its poles, so each first sphere has to turn by its own motion. The heavens look the same as they do on the reading of the text, and the only difference is in which spheres are doing the work.',
 };
 
 const VIEWS = [
   { id: 'outside', name: 'Outside the heaven',
-    note: 'This view looks at the whole heaven from beyond the fixed stars. According to Aristotle nobody could actually stand there, because outside the heaven there is no place, void or time (De Caelo I 9).' },
+    note: 'This view shows the whole heaven from beyond the fixed stars. According to Aristotle nobody could stand there, because outside the heaven there is no place, void or time (De Caelo I 9).' },
   { id: 'ground', name: 'At Athens',
-    note: 'This is the view from the ground at Athens, facing south. You can drag to look in other directions. The spheres are not drawn here, only the things they carry, which are the fixed stars as they were in 350 BC and the seven wandering stars.' },
+    note: 'This view shows the sky from the ground at Athens, looking south. You can drag the picture to look in other directions. The spheres are not drawn in this view. It shows only the things they carry, which are the fixed stars in their positions of 350 BC and the seven wandering stars.' },
   { id: 'below', name: 'Below the Moon',
     note: 'This view shows the region inside the lowest sphere of the heaven. The only parts of the heaven that are drawn are the Moon, the Sun and the zodiac, and they move as they do in the system currently chosen.' },
 ];
@@ -99,7 +99,7 @@ const VIEWS = [
 const CLOCK_NOTES = {
   held: 'The daily turning is stopped so that the slower motions are easier to see.',
   daily: 'The heaven turns once a day, so time runs much more slowly.',
-  noon: 'The picture is shown once a day, always at noon. This hides the daily turning and shows how things change over the year.',
+  noon: 'The picture is updated once a day, always at noon. This takes the daily turning out of view, so that you can see how things change over the course of a year.',
 };
 
 // The four simple bodies, outermost first (On Generation and Corruption II 3; De Caelo IV 4–5).
@@ -220,7 +220,7 @@ function rebuild() {
   $('mode-astronomy').setAttribute('aria-pressed', String(exploring ? state.astronomy : walk.script === 'trials'));
   $('changed-note').hidden = !(exploring && !state.astronomy && changed());
   $('row-arrows').hidden = !(exploring && now.view === 'below');
-  $('drag-note').textContent = now.view === 'ground' ? 'Drag to look round.' : 'Drag to turn the view; scroll to move in or out.';
+  $('drag-note').textContent = now.view === 'ground' ? 'Drag to look round.' : 'Drag to turn the view, and scroll to move in or out.';
   if (walk.active) renderWalk();
   else { renderView(); renderSystem(); renderFocus(); renderTilt(); renderShow(); }
   renderRollcall();

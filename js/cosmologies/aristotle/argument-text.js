@@ -20,7 +20,7 @@ export const ARGUMENT = [
     "scene": "arg-night",
     "el": "… περὶ ταύτης λεκτέον ὅτι ἀνάγκη εἶναι ἀΐδιόν τινα οὐσίαν ἀκίνητον. … ἀλλʼ ἀδύνατον κίνησιν ἢ γενέσθαι ἢ φθαρῆναι (ἀεὶ γὰρ ἦν), οὐδὲ χρόνον. … κίνησις δʼ οὐκ ἔστι συνεχὴς ἀλλʼ ἢ ἡ κατὰ τόπον, καὶ ταύτης ἡ κύκλῳ.",
     "en": "… regarding the latter we must assert that it is necessary that there should be an eternal unmovable substance. … But it is impossible that movement should either have come into being or cease to be (for it must always have existed), or that time should. … And there is no continuous movement except movement in place, and of this only that which is circular is continuous.",
-    "say": "This is the night sky as it looks from Athens, turning once a day. Aristotle starts from that motion and argues that it can never have begun. Time cannot have a beginning, because there would be no “before” without time, and motion is as continuous as time is. The only motion that can go on without interruption is motion in a circle.",
+    "say": "The picture shows the night sky over Athens, which turns once a day. Aristotle starts from this motion and argues that it cannot ever have begun. His reason is that time cannot have a beginning, since there could be no “before” if there were no time, and that motion must be as continuous as time is. He adds that the only motion which can continue without interruption is motion in a circle.",
     "lit": []
   },
   {
@@ -29,11 +29,11 @@ export const ARGUMENT = [
     "scene": "arg-night",
     "el": "ἀλλὰ μὴν εἰ ἔστι κινητικὸν ἢ ποιητικόν, μὴ ἐνεργοῦν δέ τι, οὐκ ἔσται κίνησις· ἐνδέχεται γὰρ τὸ δύναμιν ἔχον μὴ ἐνεργεῖν. … δεῖ ἄρα εἶναι ἀρχὴν τοιαύτην ἧς ἡ οὐσία ἐνέργεια. ἔτι τοίνυν ταύτας δεῖ τὰς οὐσίας εἶναι ἄνευ ὕλης· ἀϊδίους γὰρ δεῖ, εἴπερ γε καὶ ἄλλο τι ἀΐδιον.",
     "en": "But if there is something which is capable of moving things or acting on them, but is not actually doing so, there will not necessarily be movement; for that which has a potency need not exercise it. … There must, then, be such a principle, whose very essence is actuality. Further, then, these substances must be without matter; for they must be eternal, if anything is eternal.",
-    "say": "If the cause of this motion only had the capacity to cause it, the motion might sometimes fail, because a capacity does not have to be exercised. Aristotle therefore concludes that the cause must be something whose whole being is activity, with nothing in it that is merely potential, and that it has no matter. He already speaks of such substances in the plural here.",
+    "say": "If the cause of this motion only had the capacity to cause it, the motion might sometimes fail, because a capacity does not have to be exercised. Aristotle therefore concludes that the cause must be something whose whole being consists in activity and which contains nothing that is merely potential. He infers that it has no matter. In this passage he already speaks of such substances in the plural.",
     "lit": []
   },
   {
-    "title": "The first heaven, and what moves it",
+    "title": "The first heaven and its mover",
     "ref": "Metaphysics Λ 7, 1072a21–26",
     "scene": "arg-first",
     "lit": [
@@ -52,8 +52,8 @@ export const ARGUMENT = [
     ],
     "el": "κινεῖ δὲ ὧδε τὸ ὀρεκτὸν καὶ τὸ νοητόν· κινεῖ οὐ κινούμενα. … κινεῖ δὴ ὡς ἐρώμενον, κινούμενα δὲ τἆλλα κινεῖ.",
     "en": "And the object of desire and the object of thought move in this way; they move without being moved. … The final cause, then, produces motion as being loved, but all other things move by being moved.",
-    "say": "Aristotle explains how something can cause motion while remaining unmoved by comparing it to an object of desire or of thought, which moves us without being affected itself. The first mover moves the heaven in that way, as something loved. This is why the line in the picture runs from the sphere to its mover. It is the sphere that is drawn towards the mover, and the mover itself does not change.",
-    "dispute": "Scholars disagree about how literally to take this. On the usual reading, which Judson defends, the mover is a separate being, and the sphere is alive, is aware of the mover and imitates its perfection by turning for ever. Broadie, Kosman and Berti argue that the mover is not separate from the sphere but is its form or soul, and some of them take the language of love to be metaphorical."
+    "say": "Aristotle explains how something can cause motion while remaining unmoved by comparing it to an object of desire or of thought, which moves us without being affected itself. The first mover moves the heaven in that way, as something loved. That is why the line in the picture runs from the sphere to its mover. The sphere is drawn towards the mover, while the mover itself does not change.",
+    "dispute": "Scholars disagree about how literally to take this. On the usual reading, which Judson defends, the mover is a separate being, and the sphere is alive, is aware of the mover and imitates its perfection by turning for ever. Broadie, Kosman and Berti argue that the mover is the form or soul of the sphere and has no separate existence, and some of them think that the language of love is metaphorical."
   },
   {
     "title": "What the first mover is",
@@ -64,8 +64,8 @@ export const ARGUMENT = [
     ],
     "el": "ἐκ τοιαύτης ἄρα ἀρχῆς ἤρτηται ὁ οὐρανὸς καὶ ἡ φύσις. … εἰ οὖν οὕτως εὖ ἔχει, ὡς ἡμεῖς ποτέ, ὁ θεὸς ἀεί, θαυμαστόν· εἰ δὲ μᾶλλον, ἔτι θαυμασιώτερον. ἔχει δὲ ὧδε. καὶ ζωὴ δέ γε ὑπάρχει· ἡ γὰρ νοῦ ἐνέργεια ζωή, ἐκεῖνος δὲ ἡ ἐνέργεια·",
     "en": "On such a principle, then, depend the heavens and the world of nature. … If, then, God is always in that good state in which we sometimes are, this compels our wonder; and if in a better this compels it yet more. And God is in a better state. And life also belongs to God; for the actuality of thought is life, and God is that actuality",
-    "say": "So far this substance has been described only by what it does for the heaven. Aristotle now says what it is in itself. It is the activity of thinking, which is the best kind of life, and which we can enjoy only for short periods while it enjoys it always. This is the being that he calls god.",
-    "dispute": "Bordt and Menn both stress this point. In their view “unmoved mover” describes god only in relation to the heaven and should not be taken as an account of what god is."
+    "say": "Up to this point Aristotle has described this substance only by what it does for the heaven. He now says what it is in itself, which is the activity of thinking. Thinking is the best kind of life, and we can enjoy it only for short periods, whereas this substance enjoys it always. Aristotle says that this being is god.",
+    "dispute": "Bordt and Menn both emphasise this. In their view the phrase “unmoved mover” describes god only in relation to the heaven, and it does not tell us what god is."
   },
   {
     "title": "One such substance, or more?",
@@ -78,7 +78,7 @@ export const ARGUMENT = [
     "lit": []
   },
   {
-    "title": "Ask the astronomers",
+    "title": "What the astronomers say",
     "ref": "Metaphysics Λ 8, 1073b10–32",
     "scene": "arg-saturn",
     "lit": [
@@ -109,7 +109,7 @@ export const ARGUMENT = [
     "el": "—τὸ μὲν οὖν πλῆθος τῶν σφαιρῶν ἔστω τοσοῦτον, ὥστε καὶ τὰς οὐσίας καὶ τὰς ἀρχὰς τὰς ἀκινήτους [καὶ τὰς αἰσθητὰς] τοσαύτας εὔλογον ὑπολαβεῖν (τὸ γὰρ ἀναγκαῖον ἀφείσθω τοῖς ἰσχυροτέροις λέγειν)·",
     "en": "Let this, then, be taken as the number of the spheres, so that the unmovable substances and principles also may probably be taken as just so many; the assertion of necessity must be left to more powerful thinkers.",
     "say": "Aristotle concludes that there are as many unmoved movers as there are spheres. Each of the fifty-five spheres has its own mover, and with the mover of the sphere of the fixed stars that makes fifty-six. They are shown in the margin as points that do not move, in the same order as their spheres, and in this step every sphere is joined by a line to its own mover. If you point at a mark in the margin, the sphere it stands for is highlighted in the picture.",
-    "dispute": "Aristotle calls this number reasonable and leaves the question of necessity to others. Judson takes him to mean that he accepts the number but cannot prove it, since he has no proof that the astronomers have counted the spheres correctly. Charles reads passages like this one differently, as offering a plausible account without any claim that it is true.",
+    "dispute": "Aristotle calls this number reasonable and leaves the question of necessity to others. Judson takes him to mean that he accepts the number but cannot prove it, since he has no proof that the astronomers have counted the spheres correctly. Charles interprets passages like this one differently. He thinks Aristotle is offering a plausible account without claiming that it is true.",
     "lit": []
   },
   {
@@ -123,7 +123,7 @@ export const ARGUMENT = [
     "el": "… εἰ γὰρ πᾶν τὸ φέρον τοῦ φερομένου χάριν πέφυκε καὶ φορὰ πᾶσα φερομένου τινός ἐστιν, οὐδεμία φορὰ αὑτῆς ἂν ἕνεκα εἴη οὐδʼ ἄλλης φορᾶς, ἀλλὰ τῶν ἄστρων ἕνεκα.",
     "en": "… if everything that moves is for the sake of that which is moved, and every movement belongs to something that is moved, no movement can be for the sake of itself or of another movement, but all the movements must be for the sake of the stars.",
     "say": "Aristotle then argues that there cannot be more movers than this. Every motion in the heaven contributes to the motion of some star and exists for the sake of that star, and a substance of this kind must be the goal of some motion, so there are no further motions and no further movers. In the picture each sphere has the colour of the star it serves. The seven spheres that belong to Jupiter are highlighted. Four of them carry it and the other three cancel their motions.",
-    "dispute": "It is disputed how this fits with the rest of the theory. Lloyd points out that on the usual account a sphere achieves its good simply by turning evenly, which would make the planet it carries “in a way, an irrelevance”. Judson replies that helping to produce the orderly and beautiful path of the star is itself part of the sphere’s perfection. Menn distinguishes two senses of “for the sake of”, so that the mover is the goal at which the motion aims and the star is what benefits from it."
+    "dispute": "Scholars disagree about how this fits with the rest of the theory. Lloyd points out that on the usual account a sphere achieves its good simply by turning evenly, which would make the planet it carries “in a way, an irrelevance”. Judson replies that helping to produce the orderly and beautiful path of the star is itself part of the sphere’s perfection. Menn distinguishes two senses of “for the sake of”, so that the mover is the goal at which the motion aims and the star is what benefits from it."
   },
   {
     "title": "One heaven",
@@ -142,7 +142,7 @@ export const ARGUMENT = [
     "el": "παραδέδοται δὲ παρὰ τῶν ἀρχαίων καὶ παμπαλαίων ἐν μύθου σχήματι καταλελειμμένα τοῖς ὕστερον ὅτι θεοί τέ εἰσιν οὗτοι καὶ περιέχει τὸ θεῖον τὴν ὅλην φύσιν. τὰ δὲ λοιπὰ μυθικῶς ἤδη προσῆκται πρὸς τὴν πειθὼ τῶν πολλῶν καὶ πρὸς τὴν εἰς τοὺς νόμους καὶ τὸ συμφέρον χρῆσιν· … ὧν εἴ τις χωρίσας αὐτὸ λάβοι μόνον τὸ πρῶτον, ὅτι θεοὺς ᾤοντο τὰς πρώτας οὐσίας εἶναι, θείως ἂν εἰρῆσθαι νομίσειεν",
     "en": "Our forefathers in the most remote ages have handed down to their posterity a tradition, in the form of a myth, that these bodies are gods, and that the divine encloses the whole of nature. The rest of the tradition has been added later in mythical form with a view to the persuasion of the multitude and to its legal and utilitarian expediency … But if one were to separate the first point from these additions and take it alone—that they thought the first substances to be gods, one must regard this as an inspired utterance",
     "say": "The chapter ends with a comment on traditional religion. Aristotle says that a very old tradition, handed down in the form of myth, held that these are gods and that the divine encloses the whole of nature. He regards the rest of the myths, including gods in human or animal form, as later additions made to persuade people and to support the laws. If those additions are set aside, he thinks that the original belief was an inspired one.",
-    "dispute": "It is not certain what “these” refers to. Judson takes it to mean the unmoved movers and Lloyd the heavenly bodies, and Ross’s translation, “these bodies”, follows the second view. It is also unclear whether Aristotle approves of the use of myth to persuade the many or is criticising it. Segev argues that he thought traditional religion false but necessary for political life.",
+    "dispute": "It is not certain what “these” refers to. Judson thinks it means the unmoved movers and Lloyd thinks it means the heavenly bodies. Ross’s translation, “these bodies”, follows Lloyd’s view. It is also unclear whether Aristotle approves of the use of myth to persuade the many or is criticising it. Segev argues that he thought traditional religion false but necessary for political life.",
     "lit": []
   },
   {
@@ -151,7 +151,7 @@ export const ARGUMENT = [
     "scene": "arg-whole-daily",
     "el": "ἐπισκεπτέον δὲ καὶ ποτέρως ἔχει ἡ τοῦ ὅλου φύσις τὸ ἀγαθὸν καὶ τὸ ἄριστον, πότερον κεχωρισμένον τι καὶ αὐτὸ καθʼ αὑτό, ἢ τὴν τάξιν. ἢ ἀμφοτέρως ὥσπερ στράτευμα; καὶ γὰρ ἐν τῇ τάξει τὸ εὖ καὶ ὁ στρατηγός, καὶ μᾶλλον οὗτος· οὐ γὰρ οὗτος διὰ τὴν τάξιν ἀλλʼ ἐκείνη διὰ τοῦτόν ἐστιν. … τὰ δὲ ὄντα οὐ βούλεται πολιτεύεσθαι κακῶς. οὐκ ἀγαθὸν πολυκοιρανίη· εἷς κοίρανος ἔστω.",
     "en": "We must consider also in which of two ways the nature of the universe contains the good, and the highest good, whether as something separate and by itself, or as the order of the parts. Probably in both ways, as an army does; for its good is found both in its order and in its leader, and more in the latter; for he does not depend on the order but it depends on him. … but the world refuses to be governed badly. ‘The rule of many is not good; one ruler let there be.’",
-    "say": "Book Λ ends by insisting on the unity of the world. Aristotle compares the world to an army, whose good lies partly in its order and still more in its general, and he quotes Homer against thinkers who give the world several unconnected principles. This suggests that the many movers of chapter 8 are not meant to be independent of one another, although he does not explain how they are related to the first.",
+    "say": "At the end of Book Λ Aristotle insists that the world is a unity. He compares it to an army, whose good lies partly in its order and even more in its general, and he quotes Homer against thinkers who give the world several unconnected principles. This suggests that he does not regard the many movers of chapter 8 as independent of one another, although he does not explain how they are related to the first mover.",
     "dispute": "The only thing Aristotle says on the subject is that the movers are ranked in the same order as their spheres (1073b1–3). Judson observes that he has not shown that they form a hierarchy by nature.",
     "lit": []
   },
@@ -161,7 +161,7 @@ export const ARGUMENT = [
     "scene": "noons",
     "el": "εἰ δὴ τὸ αὐτὸ ἀεὶ περιόδῳ, δεῖ τι ἀεὶ μένειν ὡσαύτως ἐνεργοῦν. εἰ δὲ μέλλει γένεσις καὶ φθορὰ εἶναι, ἄλλο δεῖ εἶναι ἀεὶ ἐνεργοῦν ἄλλως καὶ ἄλλως.",
     "en": "If, then, there is a constant cycle, something must always remain, acting in the same way. And if there is to be generation and destruction, there must be something else which is always acting in different ways.",
-    "say": "The last step returns to chapter 6 and to the world below the Moon. Because the first heaven always turns in the same way, it is the cause of what is constant, such as the regular succession of day and night. The Sun also moves along a circle that is slanted to the daily turning, so that it comes closer to us and moves away again in the course of a year. Aristotle makes this the cause of the seasons, and so of things coming to be and passing away. The sequence Below the Moon shows this in more detail.",
+    "say": "For the last step we go back to chapter 6 and look at the world below the Moon. Because the first heaven always turns in the same way, it is the cause of everything that stays constant, such as the regular succession of day and night. The Sun also moves along a circle that is slanted relative to the daily turning, so that over the course of a year it comes closer to us and then moves away again. Aristotle makes this the cause of the seasons, and therefore of things coming to be and passing away. You can see this in more detail in the sequence called Below the Moon.",
     "lit": []
   }
 ];

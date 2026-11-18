@@ -48,7 +48,7 @@ export const SOURCES = {
   },
   mendell: {
     label: 'Mendell',
-    detail: 'H. Mendell, Vignettes of Ancient Mathematics, table of possible tilts. A modern conjecture.',
+    detail: 'H. Mendell, Vignettes of Ancient Mathematics, table of possible tilts. This is a modern conjecture.',
   },
   modern: {
     label: 'Modern value',

@@ -20,13 +20,13 @@
         <h1>Kosmoi</h1>
         <p class="sub">Aristotle’s cosmos, from <i>Metaphysics</i> Λ</p>
         <div class="seg mode" role="group" aria-label="What to do">
-          <button id="mode-argument" type="button" title="From eternal motion to the unmoved movers, in fourteen steps">The argument</button>
+          <button id="mode-argument" type="button" title="Aristotle’s argument from eternal motion to the unmoved movers, in fourteen steps">The argument</button>
           <button id="mode-below" type="button" title="The four simple bodies, the Sun’s slanted course, and the sky from Athens">Below the Moon</button>
           <button id="mode-look" type="button" title="Turn the heaven round for yourself">Look around</button>
         </div>
         <div class="seg mode quiet" role="group" aria-label="For closer work">
           <button id="mode-chapter" type="button" title="Metaphysics Λ 8, clause by clause, in Greek and English">Λ 8 line by line</button>
-          <button id="mode-astronomy" type="button" title="The astronomers’ systems, the rival reconstructions, every number and where it comes from">Astronomy</button>
+          <button id="mode-astronomy" type="button" title="The astronomers’ systems, the rival reconstructions, and the source of every number">Astronomy</button>
         </div>
       </header>
 
@@ -80,9 +80,9 @@
               <span>How the sets are joined</span>
               <select id="linkage">
                 <option value="text">as the text has it</option>
-                <option value="hanson">Hanson: one more unwinder each</option>
+                <option value="hanson">on Hanson’s reading</option>
                 <option value="drop">without the repeated first spheres</option>
-                <option value="beere">Beere: only the poles are carried</option>
+                <option value="beere">on Beere’s reading</option>
               </select>
             </label>
             <label id="row-unwinding" class="check"><input id="unwinding" type="checkbox"> Unwinding spheres in place</label>
@@ -90,15 +90,15 @@
             <label id="row-callippus" class="field">
               <span>What Callippus’ spheres did</span>
               <select id="callippus">
-                <option value="unknown">not recorded: show none</option>
+                <option value="unknown">not recorded</option>
                 <option value="schiaparelli">Schiaparelli’s conjecture</option>
               </select>
             </label>
             <label class="field">
-              <span>Sun and Moon: second and third</span>
+              <span>Second and third spheres of the Sun and Moon</span>
               <select id="luminaries">
                 <option value="reported">as Simplicius reports</option>
-                <option value="exchanged">exchanged (Ideler)</option>
+                <option value="exchanged">exchanged, after Ideler</option>
               </select>
             </label>
             <p id="option-note" class="note"></p>
@@ -158,7 +158,7 @@
 
           <section>
             <h2>The model tested</h2>
-            <p class="note">This sequence of eight tests compares what the model predicts with what was actually observed, including the lengths of the seasons, the retrogradations of the planets and the changes in their brightness.</p>
+            <p class="note">This sequence of eight tests compares what the model predicts with what was actually observed. It covers the lengths of the seasons, the retrogradations of the planets and the changes in their brightness.</p>
             <div class="row"><button id="run-trials" type="button">Go through the trials</button></div>
           </section>
 
@@ -207,7 +207,7 @@
           <button id="reset-view" type="button">Reset view</button>
           <button id="theme" type="button">Paper</button>
         </div>
-        <p id="drag-note" class="note">Drag to turn the view; scroll to move in or out.</p>
+        <p id="drag-note" class="note">Drag to turn the view, and scroll to move in or out.</p>
         <p id="changed-note" class="note" hidden>Some of the settings under Astronomy have been changed, so this is no longer the system as chapter 8 describes it. <button id="restore" type="button" class="link">Restore it</button></p>
       </section>
     </aside>

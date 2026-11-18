@@ -1,30 +1,33 @@
 # Kosmoi
 
-Animated models of ancient cosmologies, for teaching.
+Kosmoi is a set of animated models of ancient cosmologies, made for teaching.
 
 Open it at https://benarad.github.io/kosmoi/
 
-- **Aristotle.** The heaven of *Metaphysics* Λ: an eternal turning heaven, a sphere for
-  every motion, and an unmoved mover for every sphere. The argument of Λ 6, 7, 8 and 10 is
-  gone through step by step, with the Greek and English of each passage beside the picture.
-  The astronomy behind it (Eudoxus, Callippus, and the rival reconstructions) is behind
-  one button.
-- **Plato's *Timaeus*.** The making of the world and its gods as Timaeus tells it, in
-  thirty steps from 27d to 42e, with the Greek and English beside the picture. Nothing is
-  on stage before the step that makes it. The margin lists the gods of the dialogue, each
-  with what Timaeus calls it.
+There are two pages so far.
 
-On both pages a line under each contested passage says how it is contested and by whom.
-Those lines are summaries of the scholarship, written for teaching, and they are no
-substitute for the works they name.
+The Aristotle page shows the heaven of *Metaphysics* Λ, an eternally turning heaven in
+which every motion has a sphere and every sphere has an unmoved mover. It goes through the
+argument of Λ 6, 7, 8 and 10 step by step, with the Greek and English of each passage beside
+the picture. The astronomy behind the picture, which includes the systems of Eudoxus and
+Callippus and the rival modern reconstructions, is kept behind a single button.
 
-The pictures are schematic. Sizes and distances are for legibility, and a number that is
-not in an ancient source is marked as such on the page.
+The page on Plato's *Timaeus* shows the making of the world and its gods as Timaeus tells
+it, in thirty steps that run from 27d to 42e, with the Greek and English beside the picture.
+Each thing appears in the picture only at the step in which it is made. The margin lists the
+gods of the dialogue and gives what Timaeus calls each of them.
+
+On both pages, where scholars disagree about a passage, a line under it says what the
+disagreement is and who holds each view. These lines summarise the scholarship for teaching
+and are no substitute for the works they name.
+
+The pictures are schematic. Sizes and distances are chosen so that things can be seen, and
+any number that does not come from an ancient source is marked as such on the page.
 
 This repository holds only the published pages, which are plain HTML, CSS and JavaScript
-modules with no build step. To run them on your own machine, serve the folder
-(`python3 -m http.server`) and open the address it prints, because browsers will not load
-JavaScript modules from a file.
+modules with no build step. To run them on your own machine, serve the folder (for example
+with `python3 -m http.server`) and open the address it prints. Browsers will not load
+JavaScript modules from a file, so opening the HTML files directly does not work.
 
 ## Texts and licences
 
@@ -40,23 +43,22 @@ pages are excerpts, and they remain under that licence.
 | Plato, *Timaeus* 27d–42e, in Greek | J. Burnet, *Platonis Opera* (Oxford) | [tlg0059.tlg031.perseus-grc2](https://github.com/PerseusDL/canonical-greekLit/blob/master/data/tlg0059/tlg031/tlg0059.tlg031.perseus-grc2.xml) |
 | Plato, *Timaeus* 27d–42e, in English | R. G. Bury (Loeb Classical Library, 1929) | [tlg0059.tlg031.perseus-eng2](https://github.com/PerseusDL/canonical-greekLit/blob/master/data/tlg0059/tlg031/tlg0059.tlg031.perseus-eng2.xml) |
 
-The Greek is unaltered. In Bury's English a few slips of the digitised copy have been put
-right:
+The Greek is unaltered. In Bury's English a few slips of the digitised copy have been
+corrected.
 
-- a space before a punctuation mark was removed at 36c, 36d, 37c, 39e and 42d;
-- a doubled full stop at 38c was made single;
-- "he fourth portion" was corrected to "the fourth portion" at 35c;
-- the quotation mark before "immortal" at 41c was turned the right way;
-- a comma before the dash was removed at 32b;
-- quotation marks were restored round "is", "was" and "will be" at 37e–38a, where
-  Perseus' file marks them up.
+- A space before a punctuation mark was removed at 36c, 36d, 37c, 39e and 42d.
+- A doubled full stop at 38c was made single.
+- At 35c "he fourth portion" was corrected to "the fourth portion".
+- The quotation mark before "immortal" at 41c was turned the right way.
+- A comma before the dash was removed at 32b.
+- Quotation marks were restored round "is", "was" and "will be" at 37e–38a, where the
+  Perseus file marks them up.
 
 The English on the Aristotle page is W. D. Ross's Oxford translation, which is in the
-public domain in the United States. Both translations stand in until others are supplied.
+public domain in the United States. Both translations are placeholders until others are
+supplied.
 
-Also used:
-
-- the Yale Bright Star Catalogue, 5th edition (public domain), for the fixed stars, each
-  carried back to where it stood in 350 BC;
-- [three.js](https://threejs.org/) 0.187.0, under the MIT licence, a copy of which is in
-  `vendor/three/LICENSE`.
+The fixed stars come from the Yale Bright Star Catalogue, 5th edition, which is in the
+public domain, and each star has been moved back to its position in 350 BC. The pages use
+[three.js](https://threejs.org/) 0.187.0 under the MIT licence, and a copy of the licence
+is in `vendor/three/LICENSE`.

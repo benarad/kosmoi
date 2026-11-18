@@ -66,7 +66,7 @@ export const STEPS = [
     "lit": [],
     "el": "τὸ δὲ πλῆθος ἤδη τῶν φορῶν ἐκ τῆς οἰκειοτάτης φιλοσοφίᾳ τῶν μαθηματικῶν ἐπιστημῶν δεῖ σκοπεῖν, ἐκ τῆς ἀστρολογίας· αὕτη γὰρ περὶ οὐσίας αἰσθητῆς μὲν ἀϊδίου δὲ ποιεῖται τὴν θεωρίαν, αἱ δʼ ἄλλαι περὶ οὐδεμιᾶς οὐσίας, οἷον ἥ τε περὶ τοὺς ἀριθμοὺς καὶ τὴν γεωμετρίαν.",
     "en": "But in the number of the movements we reach a problem which must be treated from the standpoint of that one of the mathematical sciences which is most akin to philosophy—viz. of astronomy; for this science speculates about substance which is perceptible but eternal, but the other mathematical sciences, i.e. arithmetic and geometry, treat of no substance.",
-    "say": "First philosophy cannot say how many motions there are. Aristotle treats that as a question for astronomy."
+    "say": "Aristotle does not think that first philosophy can say how many motions there are, and he treats this as a question for astronomy."
   },
   {
     "ref": "1073b8–10",
@@ -322,7 +322,7 @@ export const STEPS = [
     "lit": [],
     "el": "—τὸ μὲν οὖν πλῆθος τῶν σφαιρῶν ἔστω τοσοῦτον, ὥστε καὶ τὰς οὐσίας καὶ τὰς ἀρχὰς τὰς ἀκινήτους [καὶ τὰς αἰσθητὰς] τοσαύτας εὔλογον ὑπολαβεῖν (τὸ γὰρ ἀναγκαῖον ἀφείσθω τοῖς ἰσχυροτέροις λέγειν)·",
     "en": "Let this, then, be taken as the number of the spheres, so that the unmovable substances and principles also may probably be taken as just so many; the assertion of necessity must be left to more powerful thinkers.",
-    "say": "There are as many movers as spheres. They are shown in the roll-call and not in the picture, as a point beside each sphere. If you point at a row, a line is drawn from that sphere to its mover."
+    "say": "There are as many movers as spheres. They cannot be shown in the picture, so each one appears in the roll-call as a point beside its sphere. If you point at a row, a line is drawn from that sphere to its mover."
   },
   {
     "ref": "1074a17–24",
@@ -338,7 +338,7 @@ export const STEPS = [
     "lit": [],
     "el": "τοῦτο δὲ εὔλογον ἐκ τῶν φερομένων ὑπολαβεῖν. εἰ γὰρ πᾶν τὸ φέρον τοῦ φερομένου χάριν πέφυκε καὶ φορὰ πᾶσα φερομένου τινός ἐστιν, οὐδεμία φορὰ αὑτῆς ἂν ἕνεκα εἴη οὐδʼ ἄλλης φορᾶς, ἀλλὰ τῶν ἄστρων ἕνεκα.",
     "en": "And it is reasonable to infer this from a consideration of the bodies that are moved; for if everything that moves is for the sake of that which is moved, and every movement belongs to something that is moved, no movement can be for the sake of itself or of another movement, but all the movements must be for the sake of the stars.",
-    "say": "Every motion is for the sake of a star. The spheres are now coloured according to the star each one serves. The unwinding spheres have the colour of the planet above them, since that is how Aristotle counts them."
+    "say": "Aristotle says that every motion is for the sake of a star. The spheres are now coloured according to the star each one serves. The unwinding spheres have the colour of the planet above them, since that is how Aristotle counts them."
   },
   {
     "ref": "1074a24–31",
@@ -362,7 +362,7 @@ export const STEPS = [
     "lit": [],
     "el": "παραδέδοται δὲ παρὰ τῶν ἀρχαίων καὶ παμπαλαίων ἐν μύθου σχήματι καταλελειμμένα τοῖς ὕστερον ὅτι θεοί τέ εἰσιν οὗτοι καὶ περιέχει τὸ θεῖον τὴν ὅλην φύσιν.",
     "en": "Our forefathers in the most remote ages have handed down to their posterity a tradition, in the form of a myth, that these bodies are gods, and that the divine encloses the whole of nature.",
-    "say": "Aristotle accepts part of the ancient tradition, namely that these are gods and that the divine encloses the whole of nature."
+    "say": "Aristotle accepts one part of the ancient tradition, which is the belief that these are gods and that the divine encloses the whole of nature."
   },
   {
     "ref": "1074b3–8",
@@ -378,7 +378,7 @@ export const STEPS = [
     "lit": [],
     "el": "ὧν εἴ τις χωρίσας αὐτὸ λάβοι μόνον τὸ πρῶτον, ὅτι θεοὺς ᾤοντο τὰς πρώτας οὐσίας εἶναι, θείως ἂν εἰρῆσθαι νομίσειεν, καὶ κατὰ τὸ εἰκὸς πολλάκις εὑρημένης εἰς τὸ δυνατὸν ἑκάστης καὶ τέχνης καὶ φιλοσοφίας καὶ πάλιν φθειρομένων καὶ ταύτας τὰς δόξας ἐκείνων οἷον λείψανα περισεσῶσθαι μέχρι τοῦ νῦν.",
     "en": "But if one were to separate the first point from these additions and take it alone—that they thought the first substances to be gods, one must regard this as an inspired utterance, and reflect that, while probably each art and each science has often been developed as far as possible and has again perished, these opinions, with others, have been preserved until the present like relics of the ancient treasure.",
-    "say": "He says that if these additions are removed, what remains is an inspired saying, that the first substances are gods."
+    "say": "He says that if these additions are removed, what remains is the inspired saying that the first substances are gods."
   },
   {
     "ref": "1074b13–14",

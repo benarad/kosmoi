@@ -28,15 +28,15 @@ const MONTH = 27.321662;                    // the Moon's circuit against the fi
 export const SOURCES = {
   timaeus: {
     label: 'Timaeus',
-    detail: 'This is said in the Timaeus itself, at the place given.',
+    detail: 'This is stated in the Timaeus, in the passage cited.',
   },
   eudoxus: {
     label: 'Eudoxus',
-    detail: 'This is the period Eudoxus gave, as Simplicius reports it (On De Caelo 495). The Timaeus gives no period for the three outer planets and says that few people have reckoned them (39c–d).',
+    detail: 'This is the period that Eudoxus gave, as Simplicius reports it (On De Caelo 495). The Timaeus gives no period for the three outer planets and says that few people have worked them out (39c–d).',
   },
   eudemus: {
     label: 'Eudemus',
-    detail: 'In the fourth century the slant of the zodiac was reckoned at 24°, the angle that the side of a regular fifteen-sided figure subtends (Eudemus fr. 145 Wehrli, in Theon of Smyrna). The Timaeus says only that the Different runs along the diagonal (36c).',
+    detail: 'In the fourth century BC the slant of the zodiac was taken to be 24°, which is the angle subtended by one side of a regular fifteen-sided figure (Eudemus fr. 145 Wehrli, in Theon of Smyrna). The Timaeus says only that the Different runs along the diagonal (36c).',
   },
   cornford: {
     label: 'Cornford',
@@ -63,7 +63,7 @@ export const SOURCES = {
 // The turning of the Same, described as the seven circles are below.
 export const THE_SAME = {
   id: 'same', name: 'The Same', days: TURNING, label: 'a day', source: 'timaeus', ref: '39c',
-  says: 'The Same turns the whole heaven from east to west, level with the equator, and carries with it everything inside, down to the centre (36c, 36e). Night and day are the period of this one turning, which Timaeus calls the most intelligent (39c). One turning brings the fixed stars round again in 23 hours and 56 minutes. The day from noon to noon is about four minutes longer, because by then the Sun has moved a little way along its own circle.',
+  says: 'The Same turns the whole heaven from east to west in the plane of the equator, and it carries everything inside the heaven round with it, all the way down to the centre (36c, 36e). A night and a day together make up one revolution of the Same, which Timaeus calls the most intelligent of the revolutions (39c). One revolution brings the fixed stars back to the same place in 23 hours and 56 minutes. The day from one noon to the next is about four minutes longer, because the Sun has moved a short distance along its own circle in the meantime.',
 };
 
 // The seven circles of the Different, from the Earth outwards, in the order
@@ -72,19 +72,19 @@ export const THE_SAME = {
 const SEVEN = [
   {
     id: 'moon', name: 'Moon', called: null, days: MONTH, label: '27⅓ days', source: 'modern', ref: '38d', start: 40,
-    says: 'The Moon is set in the first circle about the Earth (38d). It has the smallest circle and goes round it fastest. For that very reason it falls furthest behind the daily turning, and so it looks the slowest of all, though it is the quickest (39a). A month is over when the Moon has gone round her circle and caught up with the Sun (39c).',
+    says: 'The Moon is placed in the circle nearest the Earth (38d). Its circle is the smallest, and it goes round faster than any other planet. Because it moves so fast along its own circle, it drops further behind the daily turning than the others do, and so it looks like the slowest of them although it is in fact the fastest (39a). A month has passed when the Moon has gone round its circle and caught up with the Sun again (39c).',
   },
   {
     id: 'sun', name: 'Sun', called: null, days: YEAR, label: 'a year', source: 'timaeus', ref: '39c', start: 270,
-    says: 'The Sun is set in the second circle (38d). The maker kindled it as a light, so that the living things it suits could learn number from the turning of the heaven (39b). A year is over when the Sun has gone round its own circle (39c). The year is taken here as 365¼ days.',
+    says: 'The Sun is placed in the second circle from the Earth (38d). The maker lit it so that the living things that are capable of it could learn about number by watching the heaven turn (39b). A year has passed when the Sun has gone once round its own circle (39c). The model takes the year to be 365¼ days.',
   },
   {
     id: 'venus', name: 'Venus', called: 'the Morning Star', days: YEAR, label: 'a year', source: 'timaeus', ref: '38d', start: 230,
-    says: 'Timaeus calls this the Morning Star. Its circle runs level with the Sun’s in speed (38d). On the reading shown here it therefore keeps the same distance from the Sun for ever. That is not what is seen, and Timaeus himself says that the Sun, the Morning Star and Hermes’ star overtake and are overtaken by one another. He does not say how.',
+    says: 'Timaeus calls this planet the Morning Star, and says that its circle keeps pace with the Sun’s (38d). On the interpretation used here it therefore always stays at the same distance from the Sun. That is not what we see in the sky. Timaeus himself says that the Sun, the Morning Star and the star of Hermes overtake one another and are overtaken, but he does not explain how this happens.',
   },
   {
     id: 'mercury', name: 'Mercury', called: 'the star sacred to Hermes', days: YEAR, label: 'a year', source: 'timaeus', ref: '38d', start: 290,
-    says: 'Timaeus calls this the star sacred to Hermes. Like the Morning Star it runs level with the Sun in speed (38d), and the same difficulty arises: on the reading shown here it never gains on the Sun or falls behind it.',
+    says: 'Timaeus calls this planet the star sacred to Hermes. Like the Morning Star it keeps pace with the Sun (38d), and the same difficulty arises, because on the interpretation used here it never moves ahead of the Sun or falls behind it.',
   },
   {
     id: 'mars', name: 'Mars', called: null, days: 2 * YEAR, label: '2 years', source: 'eudoxus', ref: '38d–e', start: 100,
@@ -96,23 +96,23 @@ const SEVEN = [
     id: 'saturn', name: 'Saturn', called: null, days: 30 * YEAR, label: '30 years', source: 'eudoxus', ref: '38d–e', start: 320,
   },
 ];
-const UNNAMED = 'Timaeus does not name this star or the other two outer ones. He says that to tell where the rest were set, and why, would take longer than the subject deserves (38d–e), and that few people have reckoned their periods (39c). The period used here is the one Eudoxus gave.';
+const UNNAMED = 'Timaeus does not name this planet or the other two outer ones. He says that it would take too long to explain where the remaining planets were placed and why (38d–e), and that few people have worked out their periods (39c). The period used here is the one that Eudoxus gave.';
 
 // How large the seven circles are. Timaeus says that they are unequal and
 // were cut "by the double and triple intervals, three of each" (36d). `radii`
 // are in any unit; only their proportions matter.
 export const SIZES = {
   even: {
-    name: 'evened out', radii: [1, 2, 3, 4, 5, 6, 7], source: 'display',
-    note: 'The circles are spaced evenly here so that each can be seen. Timaeus says that they are unequal and were cut by the double and triple intervals, three of each (36d).',
+    name: 'spaced evenly', radii: [1, 2, 3, 4, 5, 6, 7], source: 'display',
+    note: 'The circles are spaced evenly here so that each of them can be seen. Timaeus says that they are unequal in size and that they were divided according to the three double intervals and the three triple intervals (36d).',
   },
   numbers: {
     name: '1, 2, 3, 4, 8, 9, 27', radii: [1, 2, 3, 4, 8, 9, 27], source: 'cornford',
-    note: 'On the simplest reading the seven numbers from the division of the soul are the radii of the circles, counted from the Earth. Cornford thought that Plato left the meaning vague on purpose, and Petrucci doubts that distances are meant at all. Scroll to move in towards the inner four.',
+    note: 'On the simplest interpretation, the seven numbers from the division of the soul are the radii of the circles, measured from the Earth. Cornford thought that Plato left this vague on purpose, and Petrucci doubts whether the numbers are meant as distances at all. You can scroll to move in towards the four inner circles.',
   },
   gaps: {
     name: 'the same numbers as gaps', radii: [1, 3, 6, 10, 18, 27, 54], source: 'chalcidius',
-    note: 'Chalcidius took the seven numbers as the gaps between one circle and the next, which makes the radii 1, 3, 6, 10, 18, 27 and 54. Macrobius reports Platonists who multiplied the numbers together instead, and that gives distances too unequal to draw. Scroll to move in towards the inner circles.',
+    note: 'Chalcidius took the seven numbers to be the distances between each circle and the next, which makes the radii 1, 3, 6, 10, 18, 27 and 54. Macrobius reports that some Platonists multiplied the numbers together, but the distances that result are too unequal to draw. You can scroll to move in towards the inner circles.',
   },
 };
 

@@ -70,15 +70,15 @@ const SPEED_RANGE = { held: [3, 3000], daily: [0.01, 4], noon: [1, 200] };
 
 const VIEWS = [
   { id: 'outside', name: 'Outside the heaven',
-    note: 'This view looks at the whole heaven from outside it. Timaeus says that nothing visible was left outside the world (33c), so there is nowhere out here for anyone to stand.' },
+    note: 'This view shows the whole heaven from outside. Nobody could stand here, because Timaeus says that nothing visible was left outside the world (33c).' },
   { id: 'ground', name: 'At Athens',
-    note: 'This is the view from the ground at Athens, facing south. You can drag to look in other directions. The circles are not drawn here, only what is seen, which is the fixed stars as they were in 350 BC, the seven wandering stars, and faintly the path they keep to.' },
+    note: 'This view shows the sky from the ground at Athens, looking south. You can drag the picture to look in other directions. The circles are not drawn in this view. It shows only what can be seen from the ground, which is the fixed stars in their positions of 350 BC, the seven planets, and a faint band that marks the path the planets follow.' },
 ];
 
 const CLOCK_NOTES = {
   held: 'The turning of the Same is stopped so that the slower motions along the Different are easier to see.',
-  daily: 'The Same turns the whole heaven once a day, so time runs much more slowly. A star that is being followed leaves its path behind it, and the two motions together wind that path into a spiral (39a).',
-  noon: 'The picture is shown once a day, always at noon. This hides the turning of the Same and shows how things change over the year.',
+  daily: 'The Same turns the whole heaven once a day, so time passes much more slowly on this setting. If you are following a planet, its path is drawn behind it, and you can see how the two motions together wind the path into a spiral (39a).',
+  noon: 'The picture is updated once a day, always at noon. This takes the daily turning of the Same out of view, so that you can see how things change over the course of a year.',
 };
 
 let model = null;
@@ -157,7 +157,7 @@ function rebuild() {
   $('mode-making').setAttribute('aria-pressed', String(walk.active));
   $('mode-look').setAttribute('aria-pressed', String(exploring && !state.astronomy));
   $('mode-astronomy').setAttribute('aria-pressed', String(exploring && state.astronomy));
-  $('drag-note').textContent = eye === 'ground' ? 'Drag to look round.' : 'Drag to turn the view; scroll to move in or out.';
+  $('drag-note').textContent = eye === 'ground' ? 'Drag to look round.' : 'Drag to turn the view, and scroll to move in or out.';
   if (walk.active) renderWalk();
   else { renderView(); renderFocus(); renderSizes(); }
   renderMargin();
@@ -311,7 +311,7 @@ function renderFocus() {
     box.appendChild(b);
   }
   const c = followed();
-  $('focus-note').textContent = c ? c.says : 'Choose one of the seven to pick out its circle and to trace its path.';
+  $('focus-note').textContent = c ? c.says : 'Choose a planet to highlight its circle and trace its path.';
 }
 
 function renderSizes() {
@@ -449,10 +449,10 @@ function renderGods() {
     rows[g.id] = r;
   }
   $('margin-title').textContent = 'The gods of the Timaeus';
-  $('count-line').textContent = 'A maker, five gods or kinds of god that he made, and something divine in us.';
+  $('count-line').textContent = 'Timaeus speaks of a maker, of five gods or kinds of god that he made, and of something divine in each of us.';
   $('count-note').textContent = walk.active
-    ? 'A row is faint until its making has been told. Point at a row to read about it, or click it to go to its step.'
-    : 'Point at a row to read about it, or click it to go to the step that tells its making.';
+    ? 'A god that has not yet appeared in the story is shown faintly. Point at a row to read about that god, or click it to go to the step that introduces it.'
+    : 'Point at a row to read about that god, or click it to go to the step that introduces it.';
   showGod();
 }
 
@@ -467,7 +467,7 @@ function showGod() {
   box.textContent = '';
   const g = GODS.find((x) => x.id === state.god);
   if (!g) {
-    box.appendChild(el('p', 'hint', 'Point at a god to read what Timaeus says of it and how that is disputed.'));
+    box.appendChild(el('p', 'hint', 'Point at a god to read what Timaeus says about it and what scholars disagree about.'));
     return;
   }
   const head = el('p', 'god-head');
@@ -498,7 +498,7 @@ function renderSteps() {
   const first = ends(MAKING[0].ref)[0], last = ends(MAKING[MAKING.length - 1].ref)[1];
   $('margin-title').textContent = 'The making, step by step';
   $('count-line').textContent = `${MAKING.length} steps, from ${first} to ${last}.`;
-  $('count-note').textContent = 'The steps go as far as the end of the maker’s own work. The young gods’ making of the human body comes after it.';
+  $('count-note').textContent = 'The steps end where the maker’s own work ends. Timaeus goes on to describe how the young gods made the human body, which is not shown here.';
 }
 
 // What a row of the list says when it is pointed at: what Timaeus says of the
@@ -508,7 +508,7 @@ function showDetail(id) {
   box.textContent = '';
   const c = id === 'same' ? model.same : id ? circleOf(model, id) : null;
   if (!c) {
-    box.appendChild(el('p', 'hint', 'Point at a circuit to read what Timaeus says of it. Click one of the seven to follow it.'));
+    box.appendChild(el('p', 'hint', 'Point at a circuit to read what Timaeus says about it. Click one of the seven planets to follow it.'));
     return;
   }
   box.appendChild(el('p', '', c.says));
@@ -550,7 +550,7 @@ function renderCircuits() {
     return r;
   };
   row('same', model.same.name, null, model.same.label, theme.roles.daily);
-  box.appendChild(el('p', 'tc-head', 'The Different, in seven circles'));
+  box.appendChild(el('p', 'tc-head', 'The seven circles of the Different'));
   for (const c of model.circles) {
     const r = row(c.id, c.name, c.called, c.label, c.colors[state.theme]);
     r.classList.add('choose');
@@ -558,8 +558,8 @@ function renderCircuits() {
     r.onkeydown = (e) => { if (e.code === 'Enter') chooseFocus(c.id); };
   }
   $('margin-title').textContent = 'The eight circuits';
-  $('count-line').textContent = 'One circuit of the Same and seven of the Different.';
-  $('count-note').textContent = 'Timaeus says what the circuits of the Same, the Moon and the Sun measure, which is a day, a month and a year, and that Venus and Mercury keep pace with the Sun. For the other three he gives no period.';
+  $('count-line').textContent = 'The heaven has eight circuits, one of the Same and seven of the Different.';
+  $('count-note').textContent = 'Timaeus says that the circuits of the Same, the Moon and the Sun measure the day, the month and the year, and that Venus and Mercury keep pace with the Sun. He gives no period for the other three planets.';
   showLit();
   showDetail(state.focus);
 }
