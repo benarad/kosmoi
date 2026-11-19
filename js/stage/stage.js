@@ -30,6 +30,21 @@ export const THEMES = {
   },
 };
 
+// Which of two names stays when they would print over one another: the one
+// whose kind comes higher here, and a name of no listed kind counts as 3.
+const RANK = { major: 5, band: 4, compass: 4, element: 4, minor: 2, sign: 1, star: 0 };
+// The sides of its point on which a name may be printed, in the order they are
+// tried: up and to the right (the usual place), down and to the right, up and
+// to the left, down and to the left. Each is the corner of the label that
+// rests on the point. Some kinds of name are placed by the picture itself and
+// stay where they are put.
+const PLACES = [[0, 1], [0, 0], [1, 1], [1, 0]];
+const FIXED = ['sign', 'compass', 'element', 'inward', 'beside'];
+// Two names whose points move past each other faster than this, in pixels a
+// second, are left to cross without either making room.
+const PASSING = 45;
+const STILL = { vx: 0, vy: 0 };   // how fast a control lying over the picture is moving
+
 export class Stage {
   constructor(container) {
     this.container = container;
@@ -74,22 +89,40 @@ export class Stage {
     this.extent = 10;          // radius of what is drawn, for the depth fade
     this._frame = [];
     this._labels = new Set();
+    this._boxes = new WeakMap();   // the size of each name on the page, measured now and then
+    this._frames = 0;
+    this._clock = 2;           // seconds of drawing, for timing the names' changes of side (a name may move from the start)
 
     new ResizeObserver(() => this.resize()).observe(container);
     this.resize();
 
+    // While nothing is moving there is no need to draw sixty pictures a second.
+    // A page says when it is at rest (`resting`), and the stage then draws four
+    // times a second, which is often enough to pick up a change made from the
+    // page. Anything the viewer does wakes it for a moment, so that turning the
+    // picture stays smooth and the camera has time to settle afterwards.
+    this.resting = null;
+    this._awake = 0;
+    for (const type of ['pointerdown', 'pointermove', 'wheel', 'keydown', 'touchstart']) {
+      window.addEventListener(type, () => this.wake(), { capture: true, passive: true });
+    }
+
     let last = performance.now();
     const loop = (now) => {
+      requestAnimationFrame(loop);
+      if (this.resting && this.resting() && now > this._awake && now - last < 250) return;
       const dt = Math.min(0.1, (now - last) / 1000);
       last = now;
       for (const f of this._frame) f(dt);
       this._render(dt);
-      requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
   }
 
   onFrame(f) { this._frame.push(f); }
+
+  // Draw at full speed for the next second and a half, whatever the page says about being at rest.
+  wake() { this._awake = performance.now() + 1500; }
 
   setTheme(theme) {
     this.theme = theme;
@@ -163,13 +196,18 @@ export class Stage {
     this._stand();
   }
 
-  // Labels registered here fade as they pass behind the scene.
+  // Labels registered here fade as they pass behind the scene, and give way
+  // to one another where they would overlap.
   trackLabel(obj) { this._labels.add(obj); }
   untrackLabel(obj) { this._labels.delete(obj); }
 
   resize() {
     const w = this.container.clientWidth, h = this.container.clientHeight;
     if (!w || !h) return;
+    this._w = w;
+    this._h = h;
+    this._measured = -1;       // the names may have changed size with the window: measure them again
+    this.wake();
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
@@ -203,15 +241,119 @@ export class Stage {
     this.scene.fog.far = outside ? d + this.extent * 3.2 : 1000;
 
     this.renderer.render(this.scene, this.camera);
+    this.labelRenderer.render(this.scene, this.camera);
+    this._settleLabels(d, outside, dt);
+  }
 
-    const p = new THREE.Vector3();
+  // Where each name is printed, and how strongly. A name on the far side of
+  // the picture is fainter. Where two names would print over one another, the
+  // less important of the two makes room (a planet's name stays before a sign
+  // of the zodiac, and a sign before a star). It moves to another side of its
+  // own point if one is free, and if none is, it fades out until there is
+  // room again. Between names that matter equally, the one that has been in
+  // its place longer stays.
+  //
+  // Two things keep this from making the picture restless. Names that are
+  // passing one another quickly are left alone, since the overlap is over in a
+  // moment (the Moon's name going round the Earth's, at sixty days a second).
+  // And a name changes sides at most once a second.
+  _settleLabels(d, outside, dt) {
+    // A name's size on the page changes only when its text or the size of the
+    // type does, so it is measured again a few times a second and otherwise
+    // remembered.
+    const frame = this._frames++;
+    const round = Math.floor(frame / 20);
+    const fresh = round !== this._measured;
+    this._measured = round;
+    this._clock += dt;
+
+    const p = new THREE.Vector3(), items = [];
     for (const obj of this._labels) {
+      const el = obj.element, u = obj.userData;
+      if (el.style.display === 'none') { u.gaveWay = false; continue; }
       obj.getWorldPosition(p);
       const depth = p.distanceTo(this.camera.position) - d;        // negative: nearer than the centre
       const t = outside ? Math.max(0, Math.min(1, (depth + this.extent) / (2 * this.extent))) : 0;
-      obj.element.style.opacity = (1 - 0.72 * t).toFixed(2);
+      const fade = (1 - 0.72 * t).toFixed(2);
+
+      let box = this._boxes.get(obj);
+      if (!box || fresh || box.text !== el.textContent) {
+        const style = getComputedStyle(el), pad = (side) => parseFloat(style[`padding${side}`]) || 0;
+        const kind = Object.keys(RANK).find((k) => el.classList.contains(k));
+        // A name may change sides only if it was made in the usual place, up
+        // and to the right of its point, and is not of a kind with a place of its own.
+        const home = box ? box.home : [obj.center.x, obj.center.y];
+        box = {
+          text: el.textContent, w: el.offsetWidth, h: el.offsetHeight, home,
+          rank: kind ? RANK[kind] : 3,
+          movable: home[0] === 0 && home[1] === 1 && !FIXED.some((k) => el.classList.contains(k)),
+          // The padding holds the words off the point. It changes sides with the name, so only its amounts are kept.
+          padX: Math.max(pad('Left'), pad('Right')), padY: Math.max(pad('Top'), pad('Bottom')),
+          pad: [pad('Left'), pad('Top'), pad('Right'), pad('Bottom')],
+        };
+        this._boxes.set(obj, box);
+      }
+      if (!box.w || !box.text) { el.style.opacity = fade; continue; }
+
+      // Where its point is on the page, and how fast that is moving, in pixels a second.
+      p.project(this.camera);
+      const px = (p.x * 0.5 + 0.5) * this._w, py = (-p.y * 0.5 + 0.5) * this._h;
+      const moving = u.frame === frame - 1 && dt > 0;
+      u.vx = moving ? 0.5 * u.vx + 0.5 * ((px - u.px) / dt) : 0;
+      u.vy = moving ? 0.5 * u.vy + 0.5 * ((py - u.py) / dt) : 0;
+      Object.assign(u, { px, py, frame });
+      items.push({ obj, el, box, fade, depth, px, py, vx: u.vx, vy: u.vy, gaveWay: !!u.gaveWay, changed: u.changed || 0 });
     }
-    this.labelRenderer.render(this.scene, this.camera);
+
+    // Where the words themselves would be with the name on the given side of its point.
+    const wordsAt = (it, [cx, cy]) => {
+      const { w, h, movable, padX, padY, pad } = it.box;
+      const x = it.px - cx * w, y = it.py - cy * h;
+      return movable
+        ? { x0: x + (cx ? 0 : padX), y0: y + (cy ? 0 : padY), x1: x + w - (cx ? padX : 0), y1: y + h - (cy ? padY : 0) }
+        : { x0: x + pad[0], y0: y + pad[1], x1: x + w - pad[2], y1: y + h - pad[3] };
+    };
+    const passing = (a, b) => Math.hypot(a.vx - b.vx, a.vy - b.vy) > PASSING;
+    // Controls that lie over the picture (they are marked data-clear) are in
+    // the way just as another name would be, so names keep clear of them too.
+    if (fresh || !this._solid) {
+      const frame = this.container.getBoundingClientRect();
+      this._solid = [...this.container.querySelectorAll('[data-clear]')].map((e) => e.getBoundingClientRect())
+        .filter((r) => r.width && r.height)
+        .map((r) => ({ x0: r.left - frame.left, y0: r.top - frame.top, x1: r.right - frame.left, y1: r.bottom - frame.top, it: STILL }));
+    }
+    const kept = [...this._solid];
+    // Whether the words would be clear of the names already placed, with `room` to spare.
+    const clear = (it, b, room) => !kept.some((k) => !passing(it, k.it) && b.x0 - room < k.x1 && b.x1 + room > k.x0 && b.y0 - room < k.y1 && b.y1 + room > k.y0);
+    // Whether they would also be clear of the points that other names belong to. This is asked only of a side the name might move to.
+    const open = (it, b, room) => clear(it, b, room)
+      && !items.some((o) => o !== it && !passing(it, o) && o.px > b.x0 - 4 && o.px < b.x1 + 4 && o.py > b.y0 - 4 && o.py < b.y1 + 4);
+    const same = (a, b) => a[0] === b[0] && a[1] === b[1];
+
+    items.sort((a, b) => b.box.rank - a.box.rank || a.gaveWay - b.gaveWay || a.changed - b.changed || a.depth - b.depth);
+    for (const it of items) {
+      const { obj, el, box } = it;
+      const now = [obj.center.x, obj.center.y];
+      const mayMove = box.movable && this._clock - it.changed > 1;
+      let side = null;
+      // A name that has given way comes back only when there is a little room to spare, so that it does not flicker.
+      if (clear(it, wordsAt(it, now), it.gaveWay ? 6 : 1)) {
+        // Where it is will do. It goes back to its usual place once that is well clear.
+        side = mayMove && !same(now, box.home) && open(it, wordsAt(it, box.home), 14) ? box.home : now;
+      } else if (mayMove) {
+        side = PLACES.find((c) => !same(c, now) && open(it, wordsAt(it, c), 6)) || null;
+      }
+      obj.userData.gaveWay = !side;
+      el.style.opacity = side ? it.fade : '0';
+      if (!side) continue;
+      if (!same(side, now)) {
+        obj.center.set(side[0], side[1]);
+        el.classList.toggle('left', side[0] === 1);
+        el.classList.toggle('below', side[1] === 0);
+        obj.userData.changed = this._clock;
+      }
+      kept.push({ ...wordsAt(it, side), it });
+    }
   }
 }
 

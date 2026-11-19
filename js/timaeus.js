@@ -13,12 +13,15 @@ import {
   YEAR, SOURCES, SIZES, defaultConfig, buildModel, circleOf, longitude, heaven, seen,
 } from './cosmologies/timaeus/model.js';
 import { fallsBehind, fromSun, NOON } from './cosmologies/timaeus/measure.js';
-import { MAKING, ACT_SECONDS, ARRIVAL_SECONDS, sceneOf } from './cosmologies/timaeus/sequence.js';
+import { MAKING, GROUPS, ACT_SECONDS, ARRIVAL_SECONDS, sceneOf } from './cosmologies/timaeus/sequence.js';
 import { GODS, GOD_GROUPS } from './cosmologies/timaeus/gods.js';
 import { TimaeusView } from './cosmologies/timaeus/heaven-view.js';
 import { MakingView } from './cosmologies/timaeus/making-view.js';
 import { Stage, THEMES, upQuaternion } from './stage/stage.js';
-import { giveKeysBack, showFromTop } from './panel.js';
+import {
+  giveKeysBack, isShortcut, showFromTop, partLinks, stepStrip, readPlace, writePlace, savedTheme, saveTheme,
+} from './panel.js';
+import { viewCorner } from './present.js';
 
 const $ = (id) => document.getElementById(id);
 const prefers = (q) => window.matchMedia && window.matchMedia(q).matches;
@@ -29,6 +32,11 @@ function el(tag, className, text) {
   if (text !== undefined) e.textContent = text;
   return e;
 }
+
+// A reader who has asked the system for less motion is not shown anything
+// moving until they press Play, and a finger has no wheel to scroll with.
+const calm = prefers('(prefers-reduced-motion: reduce)');
+const touch = prefers('(pointer: coarse)');
 
 const stage = new Stage($('stage'));
 const view = new TimaeusView(stage);      // the finished heaven
@@ -54,12 +62,12 @@ const state = {
   focus: null,                            // the star being followed, or null for none
   clock: 'held',                          // the Same: 'held' still, 'daily' running, or seen once a day at 'noon'
   clocks: { outside: 'held', ground: 'daily' },   // the clock last used from each place to stand
-  playing: !prefers('(prefers-reduced-motion: reduce)'),
+  playing: !calm,
   speed: { held: 60, daily: 0.05, noon: 14 },     // days of the model per second of watching
   show: { trail: true, labels: true, stars: true },
   margin: 'gods',                         // what the margin lists: the 'gods', or the 'list' of steps or circuits
   god: null,                              // the god last pointed at in the margin, whose description stays up
-  theme: prefers('(prefers-color-scheme: light)') ? 'light' : 'dark',
+  theme: savedTheme() || (prefers('(prefers-color-scheme: light)') ? 'light' : 'dark'),
 };
 
 // The sequence: whether it is being gone through, and the step reached.
@@ -88,6 +96,7 @@ let Td = 0;                   // days the Same has run
 let owed = 0;                 // from noon to noon: the part of a day not yet stepped
 let act = null;               // a scene of the making on stage: { acts, total, at, still }, with `at` in seconds
 let arrival = null;           // what is coming to be in the heaven while a step plays: { name, total, at }
+                              // (either may be marked `unplayed`: opened at its end, for a reader who wants less motion)
 let scrubbing = false;        // the step's slider is being dragged
 let hover = null;             // what the row pointed at picks out in the picture: a circuit, or a god that is in it
 let rows = {};                // the list's row for each circuit, step or god
@@ -151,18 +160,28 @@ function rebuild() {
   }
 
   const exploring = !walk.active;
+  document.documentElement.classList.toggle('walking', walk.active);
   $('explore').hidden = !exploring;
   $('walk').hidden = exploring;
+  // A step of the making has no clock. Going through the sequence, Pause is in
+  // the bar at the top of the step, and so is Again when the step has something to play.
+  $('time-section').hidden = !!act;
   $('time-heaven').hidden = !!act;
-  $('astronomy').hidden = !state.astronomy;
+  $('play').hidden = walk.active;
+  $('reset').hidden = walk.active && !!arrival;
+  $('astronomy-part').hidden = !state.astronomy;
   $('mode-making').setAttribute('aria-pressed', String(walk.active));
   $('mode-look').setAttribute('aria-pressed', String(exploring && !state.astronomy));
   $('mode-astronomy').setAttribute('aria-pressed', String(exploring && state.astronomy));
-  $('drag-note').textContent = eye === 'ground' ? 'Drag to look round.' : 'Drag to turn the view, and scroll to move in or out.';
+  $('drag-note').textContent = eye === 'ground' ? 'Drag to look round.'
+    : touch ? 'Drag to turn the view, and pinch to move in or out.'
+    : 'Drag to turn the view, and scroll to move in or out.';
   if (walk.active) renderWalk();
   else { renderView(); renderFocus(); renderSizes(); }
   renderMargin();
   renderSpeed();
+  writePlace(walk.active ? 'making' : state.astronomy ? 'astronomy' : 'look', walk.active ? walk.index : null);
+  stage.wake();
 }
 
 function restart() {
@@ -174,10 +193,15 @@ function restart() {
   view.clearTrail();
 }
 
-function applyTheme() {
+function paintTheme() {
   document.documentElement.dataset.theme = state.theme;
   stage.setTheme(THEMES[state.theme]);
-  $('theme').textContent = state.theme === 'dark' ? 'Paper' : 'Night';
+}
+
+function setTheme(name) {
+  state.theme = name;
+  saveTheme(name);
+  paintTheme();
   rebuild();
 }
 
@@ -221,7 +245,10 @@ function actNow() {
 stage.onFrame((dt) => {
   if (!model) return;
   if (act) {
-    if (state.playing) act.at = Math.min(act.total, act.at + dt);
+    if (state.playing && act.at < act.total) {
+      act.at = Math.min(act.total, act.at + dt);
+      if (act.at >= act.total) setReady(true);
+    }
     const [name, p] = actNow();
     if (state.playing) making.tick(dt, name, p);
     making.show(name, p);
@@ -234,7 +261,10 @@ stage.onFrame((dt) => {
   if (state.playing) advance(dt);
   if (arrival) {
     // Something is coming to be in the heaven as the step plays.
-    if (state.playing) arrival.at = Math.min(arrival.total, arrival.at + dt);
+    if (state.playing && arrival.at < arrival.total) {
+      arrival.at = Math.min(arrival.total, arrival.at + dt);
+      if (arrival.at >= arrival.total) setReady(true);
+    }
     view.setArrival(arrival.name, arrival.at / arrival.total);
     if (!scrubbing) $('act').value = Math.round((1000 * arrival.at) / arrival.total);
   }
@@ -344,10 +374,22 @@ function renderWalk() {
   $('walk-say').textContent = step.say;
   $('walk-greek').textContent = step.el;
   $('walk-english').textContent = step.en;
+  $('walk-disputed').hidden = !step.dispute;
   $('walk-dispute').textContent = step.dispute || '';
+  partLinks($('walk-parts'), [['Greek', $('walk-greek')], ['English', $('walk-english')], ['Scholars', $('walk-disputed')]]);
+  markStep(i);
   $('walk-prev').disabled = i === 0;
   $('walk-next').disabled = i === MAKING.length - 1;
   $('act-row').hidden = !(arrival || (act && !act.still));
+}
+
+// What the step plays, if it plays anything that comes to an end.
+const playingNow = () => (act && !act.still ? act : arrival);
+
+// Next is marked once what the step plays has run to its end, so that a
+// reader who is waiting for it knows that nothing more is coming.
+function setReady(on) {
+  $('walk-next').classList.toggle('ready', on && walk.index < MAKING.length - 1);
 }
 
 // Move to step i. A step of the making plays from its beginning. A step that
@@ -356,16 +398,25 @@ function renderWalk() {
 function goTo(i) {
   walk.index = clamp(i, 0, MAKING.length - 1);
   const s = sceneOf(MAKING[walk.index]);
-  arrival = s.heaven && s.heaven.arrive ? { name: s.heaven.arrive, total: ARRIVAL_SECONDS[s.heaven.arrive], at: 0 } : null;
+  // A reader who wants less motion, and has not pressed Play, is shown each
+  // step as it ends: what the step makes is then in the picture, and Play or
+  // Again plays the making of it.
+  const settled = calm && !state.playing;
+  arrival = null;
   if (s.heaven) {
     act = null;
     state.clock = s.heaven.clock;
     state.speed[state.clock] = s.heaven.speed;
     restart();
+    if (s.heaven.arrive) {
+      const total = ARRIVAL_SECONDS[s.heaven.arrive];
+      arrival = { name: s.heaven.arrive, total, at: settled ? total : 0, unplayed: settled };
+    }
   } else {
     const total = s.acts.reduce((sum, a) => sum + ACT_SECONDS[a], 0);
-    act = { acts: s.acts, total, at: s.still ? total : 0, still: !!s.still };
+    act = { acts: s.acts, total, at: s.still || settled ? total : 0, still: !!s.still, unplayed: settled && !s.still };
   }
+  setReady(false);
   rebuild();
   // Keep the step's row in sight in the list. In a narrow window the list is
   // as long as the page, and the page is left where it is.
@@ -412,6 +463,8 @@ function renderMargin() {
 }
 
 const stepAt = (ref) => MAKING.findIndex((s) => s.ref === ref);
+// The five groups the steps fall into, each with the index of its first step.
+const GROUPED = GROUPS.map((g) => ({ name: g.name, from: stepAt(g.first) }));
 
 // The gods, each with what Timaeus calls it. Going through the sequence, a
 // god that has not yet appeared in the story is shown faint. Clicking a row
@@ -454,8 +507,8 @@ function renderGods() {
   $('margin-title').textContent = 'The gods of the Timaeus';
   $('count-line').textContent = 'Timaeus speaks of a maker, of five gods or kinds of god that he made, and of something divine in each of us.';
   $('count-note').textContent = walk.active
-    ? 'A god that has not yet appeared in the story is shown faintly. Click a row to read what Timaeus says about that god and what scholars disagree about.'
-    : 'Click a row to read what Timaeus says about that god and what scholars disagree about.';
+    ? 'A god that has not yet appeared in the story is shown faintly. Click a row to read what Timaeus says about that god and what scholars say.'
+    : 'Click a row to read what Timaeus says about that god and what scholars say.';
 }
 
 // Opens the description of one god under its row, or closes it if it is open.
@@ -484,7 +537,7 @@ function aboutGod(g) {
   const told = stepAt(g.at), box = el('div', 'god-about');
   const greek = el('p', 'greek-phrase', g.greek);
   greek.lang = 'grc';
-  box.append(greek, el('p', '', g.says), el('p', 'tc-head', 'What scholars disagree about'), el('p', 'dispute', g.dispute));
+  box.append(greek, el('p', '', g.says), el('p', 'tc-head', 'What scholars say'), el('p', 'dispute', g.dispute));
   if (walk.active && walk.index === told) {
     box.appendChild(el('p', 'note', 'The step you are on is the one that introduces this god.'));
   } else {
@@ -502,6 +555,8 @@ function renderSteps() {
   box.textContent = '';
   rows = {};
   MAKING.forEach((step, k) => {
+    const group = GROUPED.find((g) => g.from === k);
+    if (group) box.appendChild(el('p', 'tc-head', group.name));
     const r = el('div', 'tc-row step choose');
     r.tabIndex = 0;
     r.append(el('span', 'num', String(k + 1)), el('span', 'what', step.title), el('span', 'period', step.ref.replace('Timaeus ', '')));
@@ -643,8 +698,37 @@ function readout(dt) {
 
 function setPlaying(on) {
   state.playing = on;
-  $('play').textContent = on ? 'Pause' : 'Play';
+  $('play').textContent = $('walk-play').textContent = on ? 'Pause' : 'Play';
+  stage.wake();
 }
+
+// Pause, or play. A step that was opened at its end, for a reader who wants
+// less motion, is played from its beginning the first time Play is pressed.
+function togglePlay() {
+  const playing = playingNow();
+  if (!state.playing && playing && playing.unplayed) { playing.at = 0; playing.unplayed = false; }
+  setPlaying(!state.playing);
+}
+
+// What the address asks for: a step of the sequence, or looking around. When
+// it asks for nothing, the page opens on the sequence at its first step.
+function goToPlace(place) {
+  const mode = place && ['making', 'look', 'astronomy'].includes(place.mode) ? place.mode : 'making';
+  if (mode === 'making') {
+    if (place && place.step !== null) walk.index = clamp(place.step, 0, MAKING.length - 1);
+    if (walk.active) goTo(walk.index); else setWalking(true);
+  } else {
+    state.astronomy = mode === 'astronomy';
+    if (walk.active) setWalking(false); else rebuild();
+  }
+}
+
+// The marks of the strip under Back and Next, one for each step.
+const markStep = stepStrip($('walk-strip'), {
+  steps: MAKING.map((s) => `${s.title} (${s.ref.replace('Timaeus ', '')})`),
+  groups: GROUPED,
+  choose: (k) => goTo(k),
+});
 
 $('mode-making').onclick = () => setWalking(true);
 $('mode-look').onclick = () => {
@@ -660,16 +744,29 @@ $('sizes').onchange = (e) => { state.config.sizes = e.target.value; rebuild(); }
 $('walk-prev').onclick = () => goTo(walk.index - 1);
 $('walk-next').onclick = () => goTo(walk.index + 1);
 // The slider moves a step of the making to any point in it; the button plays it again.
-$('act').oninput = (e) => { const playing = act || arrival; if (playing) playing.at = (playing.total * e.target.value) / 1000; };
+$('act').oninput = (e) => {
+  const playing = act || arrival;
+  if (!playing) return;
+  playing.at = (playing.total * e.target.value) / 1000;
+  playing.unplayed = false;
+  setReady(false);
+};
 $('act').onpointerdown = () => { scrubbing = true; };
 $('act').onpointerup = $('act').onpointercancel = $('act').onchange = () => { scrubbing = false; };
-$('again').onclick = () => { const playing = act || arrival; if (playing) { playing.at = 0; setPlaying(true); } };
+$('again').onclick = () => {
+  const playing = act || arrival;
+  if (!playing) return;
+  playing.at = 0;
+  playing.unplayed = false;
+  setReady(false);
+  setPlaying(true);
+};
 // The margin's two lists.
 for (const [id, margin] of [['tab-gods', 'gods'], ['tab-list', 'list']]) {
   $(id).onclick = () => { state.margin = margin; hover = null; look(); renderMargin(); };
 }
 
-$('play').onclick = () => setPlaying(!state.playing);
+$('play').onclick = $('walk-play').onclick = togglePlay;
 $('reset').onclick = () => restart();
 $('speed').oninput = (e) => {
   const [lo, hi] = SPEED_RANGE[state.clock];
@@ -685,24 +782,29 @@ for (const key of Object.keys(state.show)) {
 }
 $('clear-trail').onclick = () => view.clearTrail();
 $('reset-view').onclick = () => stage.resetView();
-$('theme').onclick = () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; applyTheme(); };
 
 window.addEventListener('keydown', (e) => {
-  const within = (selector) => e.target instanceof Element && e.target.closest(selector);
-  if (within('input, select, textarea')) return;
+  if (!isShortcut(e)) return;
   if (walk.active && (e.code === 'ArrowRight' || e.code === 'ArrowLeft')) {
     e.preventDefault();
     goTo(walk.index + (e.code === 'ArrowRight' ? 1 : -1));
-  } else if (e.code === 'Space' && !within('button')) {
+  } else if (e.code === 'Space' && !(e.target instanceof Element && e.target.closest('button'))) {
     e.preventDefault();
-    setPlaying(!state.playing);
+    togglePlay();
   }
 });
+// A link to a step, followed or typed into the address bar while the page is open.
+window.addEventListener('hashchange', () => goToPlace(readPlace()));
+
+// While nothing is playing the picture need not be drawn sixty times a second.
+stage.resting = () => !state.playing;
 
 giveKeysBack();
 renderLegend();
-applyTheme();
+paintTheme();
 setPlaying(state.playing);
+viewCorner({ stage: $('stage'), margin: 'Margin', theme: state.theme, setTheme });
+goToPlace(readPlace());
 
 // For looking around from the browser console.
 window.kosmoi = {

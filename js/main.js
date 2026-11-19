@@ -14,7 +14,10 @@ import { seasons, wander, elongation, daylight } from './cosmologies/aristotle/m
 import { Stage, THEMES, upQuaternion } from './stage/stage.js';
 import { SIGNS } from './stage/parts.js';
 import { SCRIPTS, sceneOf, sectionOf, litIndices } from './walk.js';
-import { giveKeysBack, showFromTop } from './panel.js';
+import {
+  giveKeysBack, isShortcut, showFromTop, partLinks, stepStrip, readPlace, writePlace, savedTheme, saveTheme,
+} from './panel.js';
+import { viewCorner } from './present.js';
 
 const $ = (id) => document.getElementById(id);
 const prefers = (q) => window.matchMedia && window.matchMedia(q).matches;
@@ -25,6 +28,12 @@ function el(tag, className, text) {
   if (text !== undefined) e.textContent = text;
   return e;
 }
+
+// A reader who has asked the system for less motion is not shown anything
+// moving until they press Play. On a touch screen there is no pointer to hold
+// over a mark and no wheel to scroll with.
+const calm = prefers('(prefers-reduced-motion: reduce)');
+const touch = prefers('(pointer: coarse)');
 
 const stage = new Stage($('stage'));
 const view = new HeavenView(stage);       // the heaven, from outside or from the ground
@@ -52,11 +61,11 @@ const state = {
   clock: 'held',                          // the daily rotation: 'held' still, 'daily' running, or seen once a day at 'noon'
   clocks: { outside: 'held', ground: 'daily', below: 'held' },   // the clock last used from each place to stand
   held: new Set(),                        // keys of spheres held still one by one
-  playing: !prefers('(prefers-reduced-motion: reduce)'),
+  playing: !calm,
   speed: { held: 60, daily: 0.05, noon: 14 },  // days of the model per second of watching
   show: { trail: true, figure: true, shells: false, sight: true, labels: true, stars: true, arrows: false },
   upright: 'zodiac',
-  theme: prefers('(prefers-color-scheme: light)') ? 'light' : 'dark',
+  theme: savedTheme() || (prefers('(prefers-color-scheme: light)') ? 'light' : 'dark'),
 };
 
 // The guided sequences: which one is being gone through (null when exploring)
@@ -124,6 +133,7 @@ let builds = 0;
 let figureKey = null;
 let rebuildWanted = false;
 let hover = null;             // index of the sphere pointed at in the roll-call
+let pinned = null;            // on a touch screen, the sphere whose mark was last tapped, which stays picked out
 let walkLit = [];             // indices of the spheres the current step picks out
 let rowOf = [];               // roll-call row for each sphere index
 let sinceReadout = 1;         // seconds since the readout was last refreshed
@@ -164,11 +174,11 @@ const changed = () => JSON.stringify(state.config) !== JSON.stringify(defaultCon
 const focusBody = () => (now.focus ? system.bodies.find((b) => b.id === now.focus) : null);
 const bodyNamed = (id) => system.bodies.find((b) => b.id === id);
 const angleAt = (s, t, td) => (s.phase || 0) + s.rate * ((isDaily(s) ? td : t) - (lags.get(s.key) || 0));
-const lit = () => (hover !== null ? [hover] : walkLit);
+const lit = () => (hover !== null ? [hover] : pinned !== null ? [pinned] : walkLit);
 // Pointing at a sphere fades the rest right down; a step of a sequence picks
 // spheres out more gently, since the others are part of what it shows.
 function look() {
-  view.setLook(shown(), lit(), hover !== null ? 0.2 : 0.45);
+  view.setLook(shown(), lit(), hover !== null || pinned !== null ? 0.2 : 0.45);
   below.setLook({ labels: state.show.labels, arrows: walk.active ? !!(now && now.arrows) : state.show.arrows });
 }
 
@@ -186,6 +196,7 @@ function rebuild() {
   for (const k of [...state.held]) if (!keys.has(k)) state.held.delete(k);
   for (const k of [...lags.keys()]) if (!keys.has(k)) lags.delete(k);
   hover = null;
+  pinned = null;
   walkLit = walk.active ? litIndices(system, walk.step.lit) : [];
   look();
   const theme = THEMES[state.theme];
@@ -213,19 +224,30 @@ function rebuild() {
   sinceReadout = 1;
 
   const exploring = !walk.active;
+  document.documentElement.classList.toggle('walking', walk.active);
   $('explore').hidden = !exploring;
   $('walk').hidden = exploring;
-  $('astronomy').hidden = !state.astronomy;
+  $('play').hidden = walk.active;         // going through a sequence, Pause is in the bar at the top of the step
+  $('astronomy-part').hidden = !state.astronomy;
   for (const id of ['argument', 'below', 'chapter']) $(`mode-${id}`).setAttribute('aria-pressed', String(walk.script === id));
   $('mode-look').setAttribute('aria-pressed', String(exploring && !state.astronomy));
   $('mode-astronomy').setAttribute('aria-pressed', String(exploring ? state.astronomy : walk.script === 'trials'));
   $('changed-note').hidden = !(exploring && !state.astronomy && changed());
   $('row-arrows').hidden = !(exploring && now.view === 'below');
-  $('drag-note').textContent = now.view === 'ground' ? 'Drag to look round.' : 'Drag to turn the view, and scroll to move in or out.';
+  $('drag-note').textContent = now.view === 'ground' ? 'Drag to look round.'
+    : touch ? 'Drag to turn the view, and pinch to move in or out.'
+    : 'Drag to turn the view, and scroll to move in or out.';
   if (walk.active) renderWalk();
   else { renderView(); renderSystem(); renderFocus(); renderTilt(); renderShow(); }
   renderRollcall();
   renderSpeed();
+  place();
+  stage.wake();
+}
+
+// The address keeps the place: the sequence and the step reached in it, or looking around.
+function place() {
+  writePlace(walk.active ? walk.script : state.astronomy ? 'astronomy' : 'look', walk.active ? walk.index : null);
 }
 
 function restart() {
@@ -251,11 +273,16 @@ function applyUpright(animate) {
   );
 }
 
-function applyTheme() {
+function paintTheme() {
   document.documentElement.dataset.theme = state.theme;
   stage.setTheme(THEMES[state.theme]);
   lastSky = null;
-  $('theme').textContent = state.theme === 'dark' ? 'Paper' : 'Night';
+}
+
+function setTheme(name) {
+  state.theme = name;
+  saveTheme(name);
+  paintTheme();
   rebuild();
 }
 
@@ -584,6 +611,8 @@ function measure(step) {
   return m.show.map((k) => say[k]()).join(' ').replace(/^It\b/, name);
 }
 
+let strip = { script: null, mark: null };   // the strip of marks under Back and Next, and the sequence it was made for
+
 function renderWalk() {
   const list = walk.steps, i = walk.index, step = list[i], [a, b] = sectionOf(i, list);
   $('walk-head').textContent = step.title || `Aristotle, ${step.ref}`;
@@ -603,7 +632,20 @@ function renderWalk() {
   }
   $('walk-credit').hidden = !step.el;
   $('walk-say').textContent = step.say;
+  $('walk-disputed').hidden = !step.dispute;
   $('walk-dispute').textContent = step.dispute || '';
+  partLinks($('walk-parts'), [['Greek', $('walk-greek')], ['English', $('walk-english')], ['Scholars', $('walk-disputed')]]);
+  // The strip of marks is made afresh for each sequence, since they differ in length.
+  if (strip.script !== walk.script) {
+    strip = {
+      script: walk.script,
+      mark: stepStrip($('walk-strip'), {
+        steps: list.map((s) => (s.title ? `${s.title} (${s.ref})` : s.ref)),
+        choose: (k) => goTo(k),
+      }),
+    };
+  }
+  strip.mark(i);
 
   $('walk-measure').hidden = !step.seen;
   if (step.seen) {
@@ -633,8 +675,11 @@ function goTo(i) {
     now = settings();           // a step may bring the movers in, or all their lines, without changing the scene
     walkLit = litIndices(system, step.lit);
     hover = null;
+    pinned = null;
     renderRollcall();
     renderWalk();
+    place();
+    stage.wake();
   }
   // Keep the first sphere the step points at in sight in the list. In a narrow
   // window the list is as long as the page, and the page is left where it is.
@@ -762,12 +807,31 @@ function renderRollcall() {
     row.append(el('span', 'num', s.body ? String(++number) : ''), chip, what, carried, turn, mover);
     row.onmouseenter = () => { hover = i; showLit(); };
     row.onmouseleave = () => { hover = null; showLit(); };
-    row.onclick = () => { if (s.body && s.body !== now.focus) chooseFocus(s.body); };
+    row.onclick = () => choose(i, s);
+    // From the keyboard a row is reached through its tick-box, and a row that
+    // has none is a stop itself. Either way the sphere is picked out and described.
+    if (s.rate === 0) { row.tabIndex = 0; row.setAttribute('role', 'group'); row.setAttribute('aria-label', s.title); }
+    row.addEventListener('focusin', () => { hover = i; showLit(); });
+    row.addEventListener('focusout', () => { if (hover === i && !row.matches(':hover')) { hover = null; showLit(); } });
+    row.onkeydown = (e) => { if (e.code === 'Enter' && e.target === row) choose(i, s); };
     (s.body ? group : list).appendChild(row);
     rowOf[i] = row;
   });
   list.scrollTop = scroll;
   showLit();
+}
+
+// What a click on a sphere's row or mark does. With a mouse the pointer has
+// already picked the sphere out, and the click follows its planet. On a touch
+// screen there is no pointer to hold over it, so a tap picks the sphere out
+// and leaves it so, and a second tap lets it go. A planet is followed there
+// by tapping its name.
+function choose(i, s) {
+  if (touch) {
+    pinned = pinned === i ? null : i;
+    hover = null;
+    showLit();
+  } else if (s.body && s.body !== now.focus) chooseFocus(s.body);
 }
 
 // The short form of the roll-call, for when the astronomy is out of sight: a
@@ -820,7 +884,7 @@ function renderMatrix() {
     pair.setAttribute('aria-label', now.movers ? `${s.title}, and its mover` : s.title);
     pair.onmouseenter = pair.onfocus = () => { hover = i; showLit(); };
     pair.onmouseleave = pair.onblur = () => { if (hover === i) { hover = null; showLit(); } };
-    pair.onclick = () => { if (s.body && s.body !== now.focus) chooseFocus(s.body); };
+    pair.onclick = () => choose(i, s);
     pairs.appendChild(pair);
     rowOf[i] = pair;
   });
@@ -884,13 +948,14 @@ function showDetail(s, i) {
   const box = $('sphere-detail');
   box.textContent = '';
   if (!s) {
+    const point = touch ? 'Tap' : 'Point at';
     box.appendChild(el('p', 'hint', !detailed()
-      ? (!now.rings ? (now.view === 'ground' ? 'This step shows only the sky as it looks from the ground.' : 'Point at the mark to highlight the outermost sphere.')
-        : now.view === 'ground' ? 'The spheres are not drawn in the view from the ground, but they are still what moves the sky. Point at a mark to read what that sphere does.'
-        : `Each mark stands for a sphere${now.movers ? ', and the point below it is that sphere’s mover' : ''}. Point at a mark to highlight the sphere in the picture and read what it does.`)
+      ? (!now.rings ? (now.view === 'ground' ? 'This step shows only the sky as it looks from the ground.' : `${point} the mark to highlight the outermost sphere.`)
+        : now.view === 'ground' ? `The spheres are not drawn in the view from the ground, but they are still what moves the sky. ${point} a mark to read what that sphere does.`
+        : `Each mark stands for a sphere${now.movers ? ', and the point below it is that sphere’s mover' : ''}. ${point} a mark to highlight the sphere in the picture and read what it does.`)
       : now.view === 'ground'
         ? 'The spheres are not drawn in the view from the ground, but they are still moving the sky. If you untick the box beside a sphere it stops turning, and you can see how the sky moves without it.'
-        : 'Point at a sphere to highlight it and to read what it does and where that information comes from. If you untick its box the sphere stops turning, and you can see what the others do without it.'));
+        : `${point} a sphere to highlight it and to read what it does and where that information comes from. If you untick its box the sphere stops turning, and you can see what the others do without it.`));
     if (now.movers) box.appendChild(el('p', 'mover-words', 'Every sphere has its own mover, which is eternal, unmoved in itself and without magnitude (1073a36–b1). Because it has no magnitude it cannot be shown in the picture. Scholars disagree about whether the lower movers are carried round with their spheres.'));
     return;
   }
@@ -996,7 +1061,23 @@ function readout(dt) {
 
 function setPlaying(on) {
   state.playing = on;
-  $('play').textContent = on ? 'Pause' : 'Play';
+  $('play').textContent = $('walk-play').textContent = on ? 'Pause' : 'Play';
+  stage.wake();
+}
+
+// What the address asks for: a step of one of the sequences, or looking
+// around. When it asks for nothing, the page opens on the argument at its
+// first step.
+function goToPlace(place) {
+  const known = place && (Object.hasOwn(SCRIPTS, place.mode) || place.mode === 'look' || place.mode === 'astronomy');
+  const mode = known ? place.mode : 'argument';
+  if (Object.hasOwn(SCRIPTS, mode)) {
+    if (known && place.step !== null) walk.at[mode] = clamp(place.step, 0, SCRIPTS[mode].steps.length - 1);
+    if (walk.script === mode) goTo(walk.at[mode]); else setScript(mode);
+  } else {
+    state.astronomy = mode === 'astronomy';
+    if (walk.active) setScript(null); else rebuild();
+  }
 }
 
 for (const id of ['argument', 'below', 'chapter']) $(`mode-${id}`).onclick = () => setScript(id);
@@ -1014,7 +1095,7 @@ $('restore').onclick = () => { state.config = defaultConfig(); rebuild(); };
 $('walk-prev').onclick = () => goTo(walk.index - 1);
 $('walk-next').onclick = () => goTo(walk.index + 1);
 
-$('play').onclick = () => setPlaying(!state.playing);
+$('play').onclick = $('walk-play').onclick = () => setPlaying(!state.playing);
 $('reset').onclick = () => { restart(); renderRollcall(); };
 $('speed').oninput = (e) => {
   const [lo, hi] = SPEED_RANGE[state.clock];
@@ -1059,25 +1140,30 @@ $('colour-by').onchange = (e) => { state.colourBy = e.target.value; rebuild(); }
 $('serve').onchange = (e) => { state.serve = e.target.value; rebuild(); };
 $('clear-trail').onclick = () => view.clearTrail();
 $('reset-view').onclick = () => stage.resetView();
-$('theme').onclick = () => { state.theme = state.theme === 'dark' ? 'light' : 'dark'; applyTheme(); };
 $('upright').onchange = (e) => { state.upright = e.target.value; applyUpright(true); };
 
 window.addEventListener('keydown', (e) => {
-  const within = (selector) => e.target instanceof Element && e.target.closest(selector);
-  if (within('input, select, textarea')) return;
+  if (!isShortcut(e)) return;
   if (walk.active && (e.code === 'ArrowRight' || e.code === 'ArrowLeft')) {
     e.preventDefault();
     goTo(walk.index + (e.code === 'ArrowRight' ? 1 : -1));
-  } else if (e.code === 'Space' && !within('button')) {
+  } else if (e.code === 'Space' && !(e.target instanceof Element && e.target.closest('button'))) {
     e.preventDefault();
     setPlaying(!state.playing);
   }
 });
+// A link to a step, followed or typed into the address bar while the page is open.
+window.addEventListener('hashchange', () => goToPlace(readPlace()));
+
+// While nothing is playing the picture need not be drawn sixty times a second.
+stage.resting = () => !state.playing;
 
 giveKeysBack();
 renderLegend();
-applyTheme();
+paintTheme();
 setPlaying(state.playing);
+viewCorner({ stage: $('stage'), margin: 'Margin', theme: state.theme, setTheme });
+goToPlace(readPlace());
 
 // For looking around from the browser console.
 window.kosmoi = {

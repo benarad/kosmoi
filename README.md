@@ -17,9 +17,14 @@ it, in thirty steps that run from 27d to 42e, with the Greek and English beside 
 Each thing appears in the picture only at the step in which it is made. The margin lists the
 gods of the dialogue and gives what Timaeus calls each of them.
 
-On both pages, where scholars disagree about a passage, a line under it says what the
-disagreement is and who holds each view. These lines summarise the scholarship for teaching
-and are no substitute for the works they name.
+On both pages, where scholars disagree about a passage, a paragraph under it, headed *What
+scholars say*, gives the disagreement and who holds each view. These paragraphs summarise the
+scholarship for teaching and are no substitute for the works they name.
+
+Each page opens on its sequence at the first step, and the address keeps the place, so that a
+link such as `https://benarad.github.io/kosmoi/timaeus.html#making/12` leads to a particular
+step. The *Present* button in the corner of the picture opens a view for a classroom, with a
+larger picture and the step's text in larger type.
 
 The pictures are schematic. Sizes and distances are chosen so that things can be seen, and
 any number that does not come from an ancient source is marked as such on the page.

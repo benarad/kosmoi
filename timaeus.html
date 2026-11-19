@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kosmoi: the heaven of Plato’s Timaeus</title>
   <link rel="stylesheet" href="css/app.css">
+  <script>
+    // The theme last chosen, or failing that the system's, set before anything is drawn.
+    try {
+      document.documentElement.dataset.theme = localStorage.getItem('kosmoi.theme')
+        || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    } catch (e) { /* the page's script sets it a moment later */ }
+  </script>
   <script type="importmap">
     { "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/addons/" } }
   </script>
@@ -36,23 +43,32 @@
                runs to a second line. -->
           <div class="walk-bar">
             <div class="row steps">
-              <button id="walk-prev" type="button">Back</button>
-              <button id="walk-next" type="button">Next</button>
-              <span class="hint">or the arrow keys</span>
+              <button id="walk-prev" type="button" title="The step before (left arrow key)">Back</button>
+              <button id="walk-next" type="button" title="The next step (right arrow key)">Next</button>
+              <button id="walk-play" type="button" title="Pause or play (space bar)">Pause</button>
               <span id="walk-count" class="value"></span>
             </div>
+            <!-- One mark for each step: how long the sequence is, and how far through. -->
+            <div id="walk-strip" class="strip" role="group" aria-label="The steps of this sequence"></div>
             <label id="act-row" class="slider">
               <span>This step</span>
               <input id="act" type="range" min="0" max="1000" step="1">
-              <button id="again" type="button">Again</button>
+              <button id="again" type="button" title="Play this step again from its beginning">Again</button>
             </label>
             <h2 id="walk-head"></h2>
-            <p id="walk-where" class="where"></p>
+            <div class="walk-foot">
+              <span id="walk-where" class="where"></span>
+              <!-- Links down to the passage and to what scholars say about it, which are usually below the foot of the window. -->
+              <span id="walk-parts" class="parts"></span>
+            </div>
           </div>
           <p id="walk-say" class="say"></p>
           <p id="walk-greek" class="greek" lang="grc"></p>
           <p id="walk-english" class="english"></p>
-          <p id="walk-dispute" class="dispute"></p>
+          <div id="walk-disputed" class="disputed">
+            <h3>What scholars say</h3>
+            <p id="walk-dispute" class="dispute"></p>
+          </div>
           <p id="walk-credit" class="note">The Greek is Burnet’s Oxford text and the English is Bury’s Loeb translation of 1929, both as digitised by the <a href="https://www.perseus.tufts.edu/" target="_blank" rel="noopener">Perseus Digital Library</a> and used under the <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> licence. The English is used here until another is supplied. The <a href="https://github.com/benarad/kosmoi#texts-and-licences" target="_blank" rel="noopener">sources and licences</a> are listed in full with the code.</p>
         </section>
       </div>
@@ -71,8 +87,10 @@
           <p id="focus-note" class="note"></p>
         </section>
 
-        <!-- Everything astronomical: out of sight until asked for. -->
-        <div id="astronomy" hidden>
+        <!-- Everything astronomical: out of sight until asked for. Its id must not be
+             "astronomy", which is a place in the address (#astronomy): the browser
+             would scroll the panel to it. -->
+        <div id="astronomy-part" hidden>
           <section data-views="outside">
             <h2>How large the seven circles are</h2>
             <label class="field">
@@ -91,7 +109,7 @@
         </div>
       </div>
 
-      <section>
+      <section id="time-section">
         <h2>Time</h2>
         <div class="row">
           <button id="play" type="button">Pause</button>
@@ -132,13 +150,15 @@
         <div class="row">
           <button id="clear-trail" type="button">Clear path</button>
           <button id="reset-view" type="button">Reset view</button>
-          <button id="theme" type="button">Paper</button>
         </div>
         <p id="drag-note" class="note">Drag to turn the view, and scroll to move in or out.</p>
       </section>
     </aside>
 
-    <main id="stage" class="stage" aria-label="The heaven, drawn and moving"></main>
+    <main id="stage" class="stage" aria-label="The heaven, drawn and moving">
+      <noscript><p class="stage-message">This page draws a moving model, and it needs JavaScript to do so.</p></noscript>
+      <p id="stage-failed" class="stage-message" hidden>The picture could not be started. The page needs a browser from 2023 or later, such as Chrome 89, Firefox 108 or Safari 16.4, with WebGL switched on.</p>
+    </main>
 
     <aside id="rollcall-wrap" class="rollcall">
       <header>
@@ -158,6 +178,16 @@
       <div id="detail" class="detail"></div>
     </aside>
   </div>
+
+  <script>
+    // If the page's own script has not started, because the browser is too old
+    // for it or a file did not arrive, the picture's place says so.
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (!window.kosmoi) document.getElementById('stage-failed').hidden = false;
+      }, 800);
+    });
+  </script>
 
   <script type="module" src="js/timaeus.js"></script>
 </body>

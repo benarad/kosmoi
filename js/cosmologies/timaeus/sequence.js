@@ -69,3 +69,14 @@ export const SCENES = {
 };
 
 export const sceneOf = (step) => SCENES[step.scene];
+
+// The thirty steps fall into five groups. Each is named here with the passage
+// of its first step, for the list of steps in the margin and for the strip of
+// marks under Back and Next.
+export const GROUPS = [
+  { name: 'Where Timaeus begins', first: 'Timaeus 27d–28c' },
+  { name: 'The body of the world', first: 'Timaeus 29d–30a' },
+  { name: 'The soul of the world', first: 'Timaeus 35a' },
+  { name: 'Thought, time and the planets', first: 'Timaeus 37a–c' },
+  { name: 'The heaven, the gods and the souls', first: 'Timaeus 38e–39b' },
+];
